@@ -1,0 +1,3 @@
+[submodule "PortfolioWebsite/themes/academic-cv"]
+	path = PortfolioWebsite/themes/academic-cv
+	url = https://github.com/HugoBlox/theme-academic-cv

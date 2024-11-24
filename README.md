@@ -3,23 +3,39 @@
 Welcome to my **Portfolio Repository**! This repository showcases my expertise in **Machine Learning**, **Artificial Intelligence**, and **Data Science** through a collection of curated projects and a professionally designed portfolio website. It is designed to provide an overview of my skills, experiences, and contributions to real-world AI solutions.
 
 ## 📂 Repository Structure
-
+```plaintext
 Portfolio/
-├── PortfolioWebsite/ # Hugo-based portfolio website
-│ ├── content/ # Content files for landing page, resume, and projects
-│ ├── static/ # Static assets like images, CSS, and JS
-│ ├── themes/ # Custom Hugo themes
-│ ├── config.toml # Hugo configuration file
-│ ├── README.md # Documentation for the portfolio website
-│ └── scripts/ # Custom scripts for site management
+├── PortfolioWebsite/                     # Hugo-based portfolio website
+│   ├── archetypes/                       # Default archetypes for Hugo content
+│   ├── content/                          # Markdown files for pages like landing page, resume, and projects
+│   ├── static/                           # Static assets (images, CSS, JS, etc.)
+│   ├── themes/                           # Custom Hugo themes (e.g., Adritian)
+│   ├── config.toml                       # Hugo configuration file
+│   ├── scripts/                          # Scripts for deployment or build automation
+│   ├── README.md                         # Documentation for the portfolio website
+│   └── public/                           # Generated static site output after running Hugo
 │
-├── projects/ # Folder containing project implementations
-│ ├── RetailDemandForecaster/ # Time-series forecasting project
-│ ├── PredictiveMaintenanceSystem/ # Predictive maintenance solution
-│ ├── EnterpriseKnowledgeSummarizer/ # Document summarization AI tool
+├── projects/                             # Folder containing project implementations
+│   ├── RetailDemandForecaster/           # Time-series forecasting project
+│   │   ├── notebooks/                    # Jupyter notebooks for experiments
+│   │   ├── src/                          # Python scripts and model code
+│   │   ├── data/                         # Datasets or links to external datasets
+│   │   └── README.md                     # Documentation for this project
+│   ├── PredictiveMaintenanceSystem/      # Predictive maintenance solution
+│   │   ├── notebooks/
+│   │   ├── src/
+│   │   ├── data/
+│   │   └── README.md
+│   └── EnterpriseKnowledgeSummarizer/    # Document summarization AI tool
+│       ├── notebooks/
+│       ├── src/
+│       ├── data/
+│       └── README.md
 │
-├── README.md # Global repository documentation (this file)
-└── LICENSE # License for this repository
+├── README.md                             # Global repository documentation
+├── LICENSE                               # License for this repository
+└── .gitignore                            # To ignore unnecessary files
+```
 
 ## 🌐 Portfolio Website
 
@@ -140,8 +156,8 @@ This repository is licensed under the MIT License. See the [LICENSE](./LICENSE) 
 
 If you'd like to get in touch, feel free to connect:
 
-- **Email**: [Your Email Address] (Update with your email)
-- **LinkedIn**: [Your LinkedIn Profile] (Update with your profile link)
+- **Email**: topranav@outlook.com
+- **LinkedIn**: https://www.linkedin.com/in/topranav/
 - **GitHub**: [Sharma-Pranav](https://github.com/Sharma-Pranav)
 
 ---

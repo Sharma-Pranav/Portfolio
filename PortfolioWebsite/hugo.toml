@@ -1,4 +1,4 @@
-baseURL = "https://www.adrianmoreno.info"
+baseURL = "http://localhost:1313/"
 languageCode = "en-us"
 theme = "adritian"
 
@@ -24,51 +24,25 @@ theme = "adritian"
 
 # navigation
 [menu]
-
   [[menu.header]]
   name = "About"
   URL = "#about"
-  weight = 2
+  weight = 1
 
   [[menu.header]]
-  name = "Portfolio"
+  name = "Projects"
   URL = "#portfolio"
-  weight = 3
-
-#  [[menu.header]]
-#  name = "Experience"
-#  URL = "#experience"
-#  weight = 4
-
-  [[menu.header]]
-  name = "Blog"
-  URL = "/blog"
-  weight = 5
+  weight = 2
 
   [[menu.header]]
   name = "Contact"
   URL = "#contact"
-  weight = 6
-
-  [[menu.footer]]
-  name = "About"
-  URL = "#about"
-  weight = 2
-
-  [[menu.footer]]
-  name = "Portfolio"
-  URL = "#portfolio"
   weight = 3
-
-  [[menu.footer]]
-  name = "Contact"
-  URL = "#contact"
-  weight = 4
 
 
 [params]
 
-  sections = ["showcase", "about", "education", "experience", "client-and-work", "testimonial", "contact", "newsletter"]
+  sections = ["showcase", "about", "projects", "education", "experience", "contact"]
 
   homepageExperienceCount = 6
 
@@ -77,19 +51,14 @@ theme = "adritian"
   vercelAnalytics = false
   
   [params.google_analytics]
-      code = "UA-XXXXX-Y"
+      code = ""
       enabled = false
   [params.google_tag_manager]
-      code = "GTM-XXXXX"
+      code = ""
       enabled = false
   
   [params.logo]
-    text1 = "Cool"
-    text2 = "Name"
-
+    text1 = "Pranav Sharma"
   [params.footer]
-      copyright = "© Adritian. Free Hugo theme by Adrián Moreno Peña."
-      [params.footer.radity_logo]
-        x = "img/general/design-and-code-radity.png"
-        _2x = "img/general/design-and-code-radity@2x.png"
-        alt = "Design & Code - Radity"
+      copyright = "© 2024 Pranav Sharma. All Rights Reserved."
+

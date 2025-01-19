@@ -35,7 +35,7 @@ This project focuses on creating a scalable solution for optimizing dynamic pric
 3. Install dependencies:
    `pip install -r requirements.txt`
 4. Run the application:
-   `streamlit run app.py`
+   `python app.py`
 
 ## Results
 

@@ -2,7 +2,16 @@ import os
 import numpy as np
 import pandas as pd
 import warnings
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import LinearRegression, HuberRegressor, Lasso, Ridge, ElasticNet
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
+from sklearn.utils.estimator_checks import check_estimator
+from sklearn.utils.metaestimators import available_if
+from sklearn.exceptions import NotFittedError
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR, LinearSVR
+from sklearn.tree import DecisionTreeRegressor
+# from xgboost import XGBRegressor
+# from lightgbm import LGBMRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_absolute_error, r2_score
 import plotly.graph_objects as go
@@ -192,7 +201,142 @@ def coefficients_progression_plot_with_tracking(results):
     )
     return fig
 
-# Train the model and prepare results
+# New function to evaluate multiple linear models using GridSearchCV
+def train_linear_models_with_gridsearch(X_train, y_train, X_test, y_test):
+    """
+    Train and evaluate multiple linear models using GridSearchCV and compare their performance.
+
+    Parameters
+    ----------
+    X_train : pd.DataFrame
+        Training feature set.
+    y_train : pd.Series
+        Training target variable.
+    X_test : pd.DataFrame
+        Testing feature set.
+    y_test : pd.Series
+        Testing target variable.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the best model, its parameters, and performance metrics.
+    """
+    models = {
+        "Lasso": {
+            "model": Lasso(fit_intercept=False),
+            "param_grid": {"alpha": [0.001, 0.01, 0.1, 1]},
+        },
+        "Ridge": {
+            "model": Ridge(fit_intercept=False),
+            "param_grid": {"alpha": [0.001, 0.01, 0.1, 1]},
+        },
+        "ElasticNet": {
+            "model": ElasticNet(fit_intercept=False),
+            "param_grid": {
+                "alpha": [0.001, 0.01, 0.1, 1],
+                "l1_ratio": [0.2, 0.5, 0.8],
+            },
+        },
+        "LinearRegression": {
+            "model": LinearRegression(fit_intercept=False),
+            "param_grid": {},  # No hyperparameters for tuning
+        },
+        "HuberRegressor": {
+            "model": HuberRegressor(fit_intercept=False),
+            "param_grid": {"epsilon": [1.2, 1.5], "alpha": [0.001, 0.01]},
+        },
+        "KNeighborsRegressor": {
+            "model": KNeighborsRegressor(),
+            "param_grid": {"n_neighbors": [3, 5, 7], "weights": ["uniform", "distance"]},
+        },
+        "DecisionTreeRegressor": {
+            "model": DecisionTreeRegressor(),
+            "param_grid": {
+                "max_depth": [None, 10, 20],
+                "min_samples_split": [2, 5],
+                "min_samples_leaf": [1, 2],
+            },
+        },
+        "RandomForestRegressor": {
+            "model": RandomForestRegressor(random_state=42),
+            "param_grid": {
+                "n_estimators": [50, 100],
+                "max_depth": [10, 20, None],
+                "min_samples_split": [2, 5],
+            },
+        },
+        "GradientBoostingRegressor": {
+            "model": GradientBoostingRegressor(random_state=42),
+            "param_grid": {
+                "n_estimators": [50, 100],
+                "learning_rate": [0.05, 0.1],
+                "max_depth": [3, 5],
+            },
+        },
+        "AdaBoostRegressor": {
+            "model": AdaBoostRegressor(random_state=42),
+            "param_grid": {
+                "n_estimators": [50, 100],
+                "learning_rate": [0.05, 0.1],
+            },
+        },
+        "SVR": {
+            "model": SVR(),
+            "param_grid": {
+                "C": [0.1, 1],
+                "epsilon": [0.01, 0.1],
+                "kernel": ["linear", "rbf"],
+            },
+        },
+        "LinearSVR": {
+            "model": LinearSVR(random_state=42),
+            "param_grid": {"C": [0.1, 1]},
+        },
+    }
+
+    results = []
+    best_model = None
+    best_result = None
+    for name, config in models.items():
+        try:
+            grid_search = GridSearchCV(
+                config["model"],
+                config["param_grid"],
+                scoring="neg_mean_absolute_error",
+                cv=5
+            )
+            grid_search.fit(X_train, y_train)
+
+            # Predictions and evaluation
+            y_pred = grid_search.best_estimator_.predict(X_test)
+            mae = mean_absolute_error(y_test, y_pred)
+            r2 = r2_score(y_test, y_pred)
+
+            # Collect results
+            results.append({
+                "model": name,
+                "best_params": grid_search.best_params_,
+                "mae": mae,
+                "r2": r2,
+                "best_estimator": grid_search.best_estimator_,
+            })
+
+        except Exception as e:
+            print(f"Error training model {name}: {e}")
+
+    # Identify the best model based on MAE
+    if results:
+        best_result = min(results, key=lambda x: x["mae"])
+        best_model = best_result["best_estimator"]
+
+    return {
+        "results": results,
+        "best_model_name": best_result["model"] if best_result else None,
+        "best_model_metrics": best_result if best_result else None,
+        "best_model": best_model,  # Return the best model directly
+    }
+
 def train_model():
     original_data = pd.read_csv(DATA_PATH)
     data, bool_columns = load_data()
@@ -200,11 +344,12 @@ def train_model():
     y = data["Historical_Cost_of_Ride"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    param_grid = {"alpha": np.logspace(-3, 0, 4)}
-    grid_search = GridSearchCV(Lasso(fit_intercept=False), param_grid, scoring="neg_mean_absolute_error", cv=5)
-    grid_search.fit(X_train, y_train)
-    best_model = grid_search.best_estimator_
-
+    # Get the best linear model and top results
+    linear_model_results = train_linear_models_with_gridsearch(X_train, y_train, X_test, y_test)
+    best_model_name = linear_model_results["best_model_name"]
+    best_model_metrics = linear_model_results["best_model_metrics"]
+    top_models = linear_model_results["results"]  # Get all models' results
+    best_model = linear_model_results["best_model"]
     y_pred = best_model.predict(X_test)
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
@@ -229,6 +374,22 @@ def train_model():
 
     scatter_plot = duration_vs_cost_plot(original_data)
 
+    # Generate a DataFrame for the top 10 models
+    top_models_sorted = sorted(top_models, key=lambda x: x['mae'])[:10]
+    top_models_df = pd.DataFrame.from_records(
+        [
+            {
+                "Rank": idx + 1,
+                "Model": result["model"],
+                "MAE": f"{result['mae']:.4f}",
+                "R²": f"{result['r2']:.4f}",
+                "Best Params": result["best_params"],
+            }
+            for idx, result in enumerate(top_models_sorted)
+        ]
+    )
+    top_models_html = top_models_df.to_html(index=False, border=0, classes="table table-striped")
+
     return {
         "X_train": X_train,
         "y_train": y_train,
@@ -239,18 +400,22 @@ def train_model():
         "coefficients": coefficients,
         "mae": mae,
         "r2": r2,
-        "best_alpha": grid_search.best_params_["alpha"],
+        "best_model_name": best_model_name,
+        "best_model_metrics": best_model_metrics,
         "best_model": best_model,
         "regression_equation": regression_equation,
         "scatter_plot": scatter_plot,
         "useful_features": useful_features_formatted,
         "not_useful_features": not_useful_features_formatted,
+        "top_models_html": top_models_html,  # Include HTML table here
         "default_values": default_values,
         "feature_types": types,
-        "original_data_html": original_data.head(10).to_html(),
+        "original_data_html": original_data.head(3).to_html(classes="table table-striped"),
     }
 
-# Comprehensive Gradio interface
+
+
+# Comprehensive interface function
 def comprehensive_interface(*inputs):
     if "trained_model" not in comprehensive_interface.__dict__:
         comprehensive_interface.trained_model = train_model()
@@ -258,12 +423,12 @@ def comprehensive_interface(*inputs):
     results = comprehensive_interface.trained_model
     scatter_plot = results["scatter_plot"]
     regression_equation = results["regression_equation"]
-    mae = results["mae"]
-    r2 = results["r2"]
     coefficients_plot = coefficients_progression_plot_with_tracking(results)
     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
     original_data_html = results["original_data_html"]
+    top_models_html = results["top_models_html"]
 
+    # Prediction logic
     if any(inputs):
         user_inputs = list(inputs)
         custom_prediction = results["best_model"].predict([user_inputs])[0]
@@ -272,15 +437,14 @@ def comprehensive_interface(*inputs):
         prediction_result = "No custom input provided."
 
     return (
+        prediction_result,  # Return only the prediction for the prediction output
         scatter_plot,
-        f"<h3>Original Dataset</h3>{original_data_html}",
-        f"Regression Equation:\n{regression_equation}",
-        f"MAE: {mae:.4f}, R²: {r2:.4f}",
-        coefficients_plot,
+        regression_equation,
         mae_plot,
         r2_plot,
-        f"Useful Features:\n{results['useful_features']}\n\nNot Useful Features:\n{results['not_useful_features']}",
-        prediction_result
+        coefficients_plot,
+        f"<h3>Top 10 Models</h3>{top_models_html}",
+        f"<h3>Original Dataset</h3>{original_data_html}",
     )
 
 # Generate Gradio inputs dynamically
@@ -292,179 +456,51 @@ def generate_gradio_inputs():
         inputs.append(gr.Number(label=f"{feature} ({feature_type}, e.g., {default})", value=default))
     return inputs
 
-# Build Gradio interface
-gr.Interface(
-    fn=comprehensive_interface,
-    inputs=generate_gradio_inputs(),
-    outputs=[
-        gr.Plot(label="Duration vs Cost"),
-        gr.HTML(label="Original Dataset"),
-        gr.Textbox(label="Regression Equation"),
-        gr.Textbox(label="Model Metrics (MAE, R²)"),
-        gr.Plot(label="Coefficient Progression"),
-        gr.Plot(label="MAE Plot"),
-        gr.Plot(label="R² Plot"),
-        gr.Textbox(label="Feature Importance (Useful vs Not Useful)"),
-        gr.Textbox(label="Custom Prediction"),
-    ],
-    title="Dynamic Pricing Model - Comprehensive Analysis",
-    description="Train a Lasso regression model, view metrics, coefficients, and make custom predictions.",
-).launch()
+# Layout with separated predictions
+with gr.Blocks() as demo:
+    gr.Markdown("# Dynamic Pricing Model - Comprehensive Analysis")
+    gr.Markdown(
+        "Train a range of regression models, view metrics, selection of best models, coefficients, and make custom predictions."
+    )
 
-# def comprehensive_interface(*inputs):
-#     if "trained_model" not in comprehensive_interface.__dict__:
-#         comprehensive_interface.trained_model = train_model()
+    # Outputs Section (Top)
+    with gr.Row():
+        with gr.Column():
+            scatter_plot_output = gr.Plot(label="Scatter Plot")
+            regression_eq_output = gr.Textbox(label="Regression Equation")
+        with gr.Column():
+            mae_plot_output = gr.Plot(label="MAE Plot")
+            r2_plot_output = gr.Plot(label="R² Plot")
+        with gr.Column():
+            coeff_plot_output = gr.Plot(label="Coefficient Progression")
+            top_models_output = gr.HTML(label="Top 10 Models")
+            original_data_output = gr.HTML(label="Original Dataset")
 
-#     results = comprehensive_interface.trained_model
-#     scatter_plot = results["scatter_plot"]
-#     regression_equation = results["regression_equation"]
-#     mae = results["mae"]
-#     r2 = results["r2"]
-#     coefficients_plot = coefficients_progression_plot_with_tracking(results)
-#     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
-#     original_data_html = results["original_data_html"]
-#     top_models_html = results["top_models_html"]  # Get the HTML table for top models
+    # Inputs Section
+    gr.Markdown("### Input Features")
+    inputs = generate_gradio_inputs()
+    with gr.Row():
+        input_fields = [input for input in inputs]
+    trigger_button = gr.Button("Run Analysis")
 
-#     if any(inputs):
-#         user_inputs = list(inputs)
-#         custom_prediction = results["best_model"].predict([user_inputs])[0]
-#         prediction_result = f"Custom Prediction: {custom_prediction:.2f}"
-#     else:
-#         prediction_result = "No custom input provided."
+    # Predictions Section (Below Inputs)
+    with gr.Row():
+        prediction_output = gr.Textbox(label="Prediction Result")
 
-#     return (
-#         prediction_result,
-#         mae_plot,
-#         r2_plot,
-#         coefficients_plot,
-#         f"Regression Equation:\n{regression_equation}",
-#         f"<h3>Top 10 Models</h3>{top_models_html}",  # Return HTML for top models
-#         #f"MAE: {mae:.4f}, R²: {r2:.4f}",
-#         f"Useful Features:\n{results['useful_features']}\n\nNot Useful Features:\n{results['not_useful_features']}",
-#         f"<h3>Original Dataset</h3>{original_data_html}",
-#         scatter_plot,
+    # Connect inputs and outputs to the function
+    trigger_button.click(
+        fn=comprehensive_interface,
+        inputs=input_fields,
+        outputs=[
+            prediction_output,  # Only update the prediction result
+            scatter_plot_output,
+            regression_eq_output,
+            mae_plot_output,
+            r2_plot_output,
+            coeff_plot_output,
+            top_models_output,
+            original_data_output,
+        ],
+    )
 
-#     )
-
-# # Generate Gradio inputs dynamically
-# def generate_gradio_inputs():
-#     results = train_model()
-#     inputs = []
-#     for feature, default in results["default_values"].items():
-#         feature_type = results["feature_types"][feature]
-#         inputs.append(gr.Number(label=f"{feature} ({feature_type}, e.g., {default})", value=default))
-#     return inputs
-
-# gr.Interface(
-#     fn=comprehensive_interface,
-#     inputs=generate_gradio_inputs(),
-#     outputs=[
-#         gr.Textbox(label="Custom Prediction"),
-
-#         gr.Plot(label="MAE Plot"),
-#         gr.Plot(label="R² Plot"),
-#         gr.Plot(label="Coefficient Progression"),
-#         gr.Textbox(label="Regression Equation"),
-#         gr.HTML(label="Top 10 Models"),  # Use HTML for top models
-#         #gr.Textbox(label="Model Metrics (MAE, R²)"),
-#         gr.Textbox(label="Feature Importance (Useful vs Not Useful)"),
-#         gr.HTML(label="Original Dataset"),
-#         gr.Plot(label="Duration vs Cost"),
-#     ],
-#     title="Dynamic Pricing Model - Comprehensive Analysis",
-#     description="Train a range of regression models, view metrics, selection of best models, coefficients, and make custom predictions.",
-# ).launch()
-
-# import gradio as gr
-
-# # Comprehensive interface function
-# def comprehensive_interface(*inputs):
-#     if "trained_model" not in comprehensive_interface.__dict__:
-#         comprehensive_interface.trained_model = train_model()
-
-#     results = comprehensive_interface.trained_model
-#     scatter_plot = results["scatter_plot"]
-#     regression_equation = results["regression_equation"]
-#     mae = results["mae"]
-#     r2 = results["r2"]
-#     coefficients_plot = coefficients_progression_plot_with_tracking(results)
-#     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
-#     original_data_html = results["original_data_html"]
-#     top_models_html = results["top_models_html"]  # Get the HTML table for top models
-
-#     if any(inputs):
-#         user_inputs = list(inputs)
-#         custom_prediction = results["best_model"].predict([user_inputs])[0]
-#         prediction_result = f"Custom Prediction: {custom_prediction:.2f}"
-#     else:
-#         prediction_result = "No custom input provided."
-
-#     return (
-#         prediction_result,
-#         mae_plot,
-#         r2_plot,
-#         coefficients_plot,
-#         f"Regression Equation:\n{regression_equation}",
-#         f"<h3>Top 10 Models</h3>{top_models_html}",  # Return HTML for top models
-#         f"Useful Features:\n{results['useful_features']}\n\nNot Useful Features:\n{results['not_useful_features']}",
-#         f"<h3>Original Dataset</h3>{original_data_html}",
-#         scatter_plot,
-#     )
-
-# # Generate Gradio inputs dynamically
-# def generate_gradio_inputs():
-#     results = train_model()
-#     inputs = []
-#     for feature, default in results["default_values"].items():
-#         feature_type = results["feature_types"][feature]
-#         inputs.append(gr.Number(label=f"{feature} ({feature_type}, e.g., {default})", value=default))
-#     return inputs
-
-# # Three-column layout with execution trigger
-# with gr.Blocks() as demo:
-#     gr.Markdown("# Dynamic Pricing Model - Comprehensive Analysis")
-#     gr.Markdown(
-#         "Train a range of regression models, view metrics, selection of best models, coefficients, and make custom predictions."
-#     )
-
-#     # Outputs Section
-#     with gr.Row():
-#         with gr.Column():
-
-#             output_mae_plot = gr.Plot(label="MAE Plot")
-#             output_r2_plot = gr.Plot(label="R² Plot")
-#             output_coeff_plot = gr.Plot(label="Coefficient Progression")
-#         with gr.Column():
-#             output_reg_eq = gr.Textbox(label="Regression Equation")
-#             output_top_models = gr.HTML(label="Top 10 Models")  # Use HTML for top models
-#             output_feat_importance = gr.Textbox(label="Feature Importance (Useful vs Not Useful)")
-#         with gr.Column():
-#             output_prediction = gr.Textbox(label="Custom Prediction")
-#             output_original_data = gr.HTML(label="Original Dataset")
-#             output_scatter_plot = gr.Plot(label="Duration vs Cost")
-
-#     # Inputs Section
-#     gr.Markdown("### Input Features")
-#     inputs = generate_gradio_inputs()
-#     with gr.Row():
-#         input_fields = [input for input in inputs]
-#     trigger_button = gr.Button("Run Analysis")
-
-#     # Connect inputs and outputs to the function
-#     trigger_button.click(
-#         fn=comprehensive_interface,
-#         inputs=input_fields,
-#         outputs=[
-#             output_prediction,
-#             output_mae_plot,
-#             output_r2_plot,
-#             output_coeff_plot,
-#             output_reg_eq,
-#             output_top_models,
-#             output_feat_importance,
-#             output_original_data,
-#             output_scatter_plot,
-#         ],
-#     )
-
-# demo.launch()
+demo.launch()

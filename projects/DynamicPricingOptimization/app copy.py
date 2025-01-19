@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-
+import skops.io as sio
 import warnings
-from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet
+from sklearn.linear_model import LinearRegression, HuberRegressor, Lasso, Ridge, ElasticNet
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.utils.metaestimators import available_if
@@ -16,15 +16,6 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_absolute_error, r2_score
 import plotly.graph_objects as go
-from huggingface_hub import Repository, HfApi
-from skops.card import Card
-
-
-
-# Initialize repository
-repo_name = "dynamic-pricing-model"
-repo_url = f"https://huggingface.co/PranavSharma/{repo_name}"
-
 from skops.card import Card
 import gradio as gr
 
@@ -460,70 +451,37 @@ def process_features_without_values(feature_string):
         if item.strip()
     ]
 
-
+# New functions for separate buttons
+# Updated train button functionality to return all outputs
 def train_model_button():
     """
     Train the model and return all relevant outputs for display.
-    Save a model card documenting the results using skops 0.10.0.
-    Push the model and card to Hugging Face Hub.
     """
-    # Train the model and get the results
     comprehensive_interface.trained_model = train_model()
     results = comprehensive_interface.trained_model
 
-    # Extract results
     scatter_plot = results["scatter_plot"]
     regression_equation = results["regression_equation"]
     coefficients_plot = coefficients_progression_plot_with_tracking(results)
     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
     original_data_html = results["original_data_html"]
-    feature_importance_text = (
+    top_models_html = results["top_models_html"]
+    feature_importance = (
         f"### Useful Features:\n {results['useful_features']}\n\n"
         f"### Non-Useful Features:\n {results['not_useful_features']}"
     )
 
-    # Save the best model using joblib
-    model_path = "best_model.joblib"
-    dump(results["best_model"], model_path)
-
-    # Prepare metadata using skops
-    metadata = metadata_from_config({
-        "Model type": "Dynamic Pricing Model",
-        "Dataset": "Dynamic Pricing Dataset",
-        "Model task": "Regression",
-        "Author": "Pranav Sharma",
-        "MAE": f"{results['mae']:.4f}",
-        "R2": f"{results['r2']:.4f}",
-    })
-
-    # Create and save the model card
-    card = Card(metadata=metadata, title="Dynamic Pricing Model Card")
-    card_path = "model_card.md"
-    card.save(card_path)
-    print("Model card saved as model_card.md")
-
-    # Push model and card to Hugging Face Hub
-    push_to_hub(
-        repo_name="dynamic-pricing-model",
-        files=[model_path, card_path],
-        repo_type="model"
-    )
-    print("Model and card pushed to Hugging Face Hub.")
-
-    # Return outputs for display in Gradio
     return (
-        "Model trained successfully and pushed to Hugging Face Hub!",
+        "Model trained successfully!",
         scatter_plot,
         regression_equation,
         mae_plot,
         r2_plot,
         coefficients_plot,
-        results["top_models_html"],
-        original_data_html,
-        feature_importance_text,
+        f"<h3>Top 10 Models</h3>{top_models_html}",
+        f"<h3>Original Dataset</h3>{original_data_html}",
+        feature_importance,
     )
-
-
 
 # Updated prediction functionality to ensure other outputs are consistent
 def use_trained_model_button(*inputs):

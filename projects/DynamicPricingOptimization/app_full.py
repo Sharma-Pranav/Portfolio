@@ -156,6 +156,7 @@ def performance_plots_with_gridsearch(results):
     return mae_fig, r2_fig
 
 # Generate coefficient progression plot with tracking
+# Generate coefficient progression plot with tracking
 def coefficients_progression_plot_with_tracking(results):
     X_train = results["X_train"]
     y_train = results["y_train"]
@@ -197,9 +198,17 @@ def coefficients_progression_plot_with_tracking(results):
         title="Coefficient Progression with Training Size (Tracking)",
         xaxis_title="Training Size",
         yaxis_title="Coefficient Value",
-        template="plotly_white"
+        template="plotly_white",
+        height=700,  # Increased height for better vertical visibility
+        legend=dict(
+            orientation="h",  # Horizontal legend
+            y=-0.3,  # Position legend below the plot
+            x=0.5,
+            xanchor="center"
+        )
     )
     return fig
+
 
 # New function to evaluate multiple linear models using GridSearchCV
 def train_linear_models_with_gridsearch(X_train, y_train, X_test, y_test):
@@ -413,6 +422,125 @@ def train_model():
         "original_data_html": original_data.head(3).to_html(classes="table table-striped"),
     }
 
+def process_features_with_values(feature_string):
+        """Cleans and splits the feature string, retaining both feature names and values."""
+        if not feature_string:
+            return []
+        feature_string = feature_string.strip()
+        formatted_features = []
+        for item in feature_string.split("-"):
+            if not item.strip():
+                continue
+            if item.strip().replace(".", "", 1).isdigit():  # Check if the item is a float
+                if formatted_features:
+                    formatted_features[-1] = formatted_features[-1].strip() + ": " + item.strip() + "\n"
+            else:
+                formatted_features.append(" ".join(item.split()) + "\n")  # Clean extra spaces and add
+        return formatted_features
+
+def process_features_without_values(feature_string):
+    """Cleans and splits the feature string, keeping only feature names."""
+    if not feature_string:
+        return []
+    feature_string = feature_string.strip()
+    return [
+        item.split(":")[0].strip() + "\n"  # Keep only the feature name before ":"
+        for item in feature_string.split("-")
+        if item.strip()
+    ]
+
+# # Comprehensive interface function
+# def comprehensive_interface(*inputs):
+#     if "trained_model" not in comprehensive_interface.__dict__:
+#         comprehensive_interface.trained_model = train_model()
+
+#     results = comprehensive_interface.trained_model
+#     scatter_plot = results["scatter_plot"]
+#     regression_equation = results["regression_equation"]
+#     coefficients_plot = coefficients_progression_plot_with_tracking(results)
+#     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
+#     original_data_html = results["original_data_html"]
+#     top_models_html = results["top_models_html"]
+#     useful_features = results["useful_features"]
+#     not_useful_features = results["not_useful_features"]
+#     # Prediction logic
+#     if any(inputs):
+#         user_inputs = list(inputs)
+#         custom_prediction = results["best_model"].predict([user_inputs])[0]
+#         prediction_result = f"Custom Prediction: {custom_prediction:.2f}"
+#     else:
+#         prediction_result = "No custom input provided."
+
+#     return (
+#         prediction_result,  # Return only the prediction for the prediction output
+#         scatter_plot,
+#         regression_equation,
+#         mae_plot,
+#         r2_plot,
+#         coefficients_plot,
+#         f"<h3>Top 10 Models</h3>{top_models_html}",
+#         f"<h3>Original Dataset</h3>{original_data_html}",
+#     )
+
+# # Generate Gradio inputs dynamically
+# def generate_gradio_inputs():
+#     results = train_model()
+#     inputs = []
+#     for feature, default in results["default_values"].items():
+#         feature_type = results["feature_types"][feature]
+#         inputs.append(gr.Number(label=f"{feature} ({feature_type}, e.g., {default})", value=default))
+#     return inputs
+
+# # Layout with separated predictions
+# with gr.Blocks() as demo:
+#     gr.Markdown("# Dynamic Pricing Model - Comprehensive Analysis")
+#     gr.Markdown(
+#         "Train a range of regression models, view metrics, selection of best models, coefficients, and make custom predictions."
+#     )
+
+#     # Outputs Section (Top)
+#     with gr.Row():
+#         with gr.Column():
+#             scatter_plot_output = gr.Plot(label="Scatter Plot")
+#             original_data_output = gr.HTML(label="Original Dataset")
+#         with gr.Column():
+#             mae_plot_output = gr.Plot(label="MAE Plot")
+#             r2_plot_output = gr.Plot(label="R² Plot")
+#         with gr.Column():
+#             coeff_plot_output = gr.Plot(label="Coefficient Progression")
+#             regression_eq_output = gr.Textbox(label="Regression Equation")
+#             output_feat_importance = gr.Textbox(label="Feature Importance (Useful vs Not Useful)")
+#             top_models_output = gr.HTML(label="Top 10 Models")
+
+
+#     # Inputs Section
+#     gr.Markdown("### Input Features")
+#     inputs = generate_gradio_inputs()
+#     with gr.Row():
+#         input_fields = [input for input in inputs]
+#     trigger_button = gr.Button("Run Analysis")
+
+#     # Predictions Section (Below Inputs)
+#     with gr.Row():
+#         prediction_output = gr.Textbox(label="Prediction Result")
+
+#     # Connect inputs and outputs to the function
+#     trigger_button.click(
+#         fn=comprehensive_interface,
+#         inputs=input_fields,
+#         outputs=[
+#             prediction_output,  # Only update the prediction result
+#             scatter_plot_output,
+#             regression_eq_output,
+#             mae_plot_output,
+#             r2_plot_output,
+#             coeff_plot_output,
+#             top_models_output,
+#             original_data_output,
+#         ],
+#     )
+
+# demo.launch()
 
 
 # Comprehensive interface function
@@ -427,6 +555,22 @@ def comprehensive_interface(*inputs):
     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
     original_data_html = results["original_data_html"]
     top_models_html = results["top_models_html"]
+
+
+
+    # Ensure useful and non-useful features are properly formatted
+    useful_features = results.get("useful_features", "")
+    not_useful_features = results.get("not_useful_features", "")
+
+    # Process useful features (retain values) and non-useful features (omit values)
+    useful_features = process_features_with_values("".join(useful_features))
+    not_useful_features = process_features_without_values("".join(not_useful_features))
+
+    # Create feature importance display
+    feature_importance = (
+        f"### Useful Features:\n " + "".join(useful_features) + "\n\n"
+        f"### Non-Useful Features:\n " + "".join(not_useful_features)
+    )
 
     # Prediction logic
     if any(inputs):
@@ -445,6 +589,7 @@ def comprehensive_interface(*inputs):
         coefficients_plot,
         f"<h3>Top 10 Models</h3>{top_models_html}",
         f"<h3>Original Dataset</h3>{original_data_html}",
+        feature_importance,  # Include feature importance in the outputs
     )
 
 # Generate Gradio inputs dynamically
@@ -467,14 +612,16 @@ with gr.Blocks() as demo:
     with gr.Row():
         with gr.Column():
             scatter_plot_output = gr.Plot(label="Scatter Plot")
-            regression_eq_output = gr.Textbox(label="Regression Equation")
+            original_data_output = gr.HTML(label="Original Dataset")
+            top_models_output = gr.HTML(label="Top 10 Models")
         with gr.Column():
             mae_plot_output = gr.Plot(label="MAE Plot")
             r2_plot_output = gr.Plot(label="R² Plot")
         with gr.Column():
             coeff_plot_output = gr.Plot(label="Coefficient Progression")
-            top_models_output = gr.HTML(label="Top 10 Models")
-            original_data_output = gr.HTML(label="Original Dataset")
+            regression_eq_output = gr.Textbox(label="Regression Equation")
+            output_feat_importance = gr.Textbox(label="Feature Importance (Useful vs Non-Useful)")
+
 
     # Inputs Section
     gr.Markdown("### Input Features")
@@ -500,6 +647,7 @@ with gr.Blocks() as demo:
             coeff_plot_output,
             top_models_output,
             original_data_output,
+            output_feat_importance,  # Update feature importance display
         ],
     )
 

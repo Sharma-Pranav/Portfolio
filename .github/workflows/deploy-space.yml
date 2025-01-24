@@ -1,0 +1,28 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        pip install huggingface-hub
+
+    - name: Push to Hugging Face Space
+      env:
+        HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+      run: |
+        from huggingface_hub import Repository
+        repo = Repository(local_dir=".", clone_from="PranavSharma/RidePricingInsightEngine", use_auth_token=os.getenv("HUGGINGFACE_TOKEN"))
+        repo.git_add(auto_lfs_track=True)
+        repo.git_commit(commit_message="Automated deployment")
+        repo.git_push()

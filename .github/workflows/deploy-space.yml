@@ -16,29 +16,20 @@ jobs:
     - name: Install dependencies
       run: pip install huggingface-hub
 
-    - name: Verify huggingface_hub installation
-      run: python -c "import huggingface_hub; print(huggingface_hub.__version__)"
-
-    - name: Verify Git Configuration
-      run: |
-        git --version
-        git config --list
-
     - name: Push to Hugging Face Space
       env:
         HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
       run: |
-        set -e
-        echo "Cloning the Hugging Face repository..."
-        from huggingface_hub import Repository
-        repo = Repository(
-            local_dir=".",
-            clone_from="PranavSharma/RidePricingInsightEngine",
-            use_auth_token=os.getenv("HUGGINGFACE_TOKEN")
-        )
-        echo "Repository cloned successfully."
-        echo "Adding and committing changes..."
-        repo.git_add(auto_lfs_track=True)
-        repo.git_commit(commit_message="Automated deployment")
-        echo "Pushing changes..."
-        repo.git_push()
+        python -c "
+import os
+from huggingface_hub import Repository
+
+repo = Repository(
+    local_dir='.',
+    clone_from='PranavSharma/RidePricingInsightEngine',
+    use_auth_token=os.getenv('HUGGINGFACE_TOKEN')
+)
+repo.git_add(auto_lfs_track=True)
+repo.git_commit(commit_message='Automated deployment')
+repo.git_push()
+        "

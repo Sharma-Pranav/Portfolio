@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-
+from joblib import dump
 import warnings
-from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet
+from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet, HuberRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.utils.metaestimators import available_if
@@ -16,14 +16,23 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_absolute_error, r2_score
 import plotly.graph_objects as go
-from huggingface_hub import Repository, HfApi
+from huggingface_hub import Repository, HfApi, DatasetCardData
 from skops.card import Card
-
+import pickle
+from pathlib import Path
+from tempfile import mkdtemp
+from skops import hub_utils
+from pathlib import Path
+from tempfile import mkdtemp
+from joblib import dump
+import pickle
+import pandas as pd
 
 
 # Initialize repository
+User = "PranavSharma"
 repo_name = "dynamic-pricing-model"
-repo_url = f"https://huggingface.co/PranavSharma/{repo_name}"
+repo_url = f"https://huggingface.co/{User}/{repo_name}"
 
 from skops.card import Card
 import gradio as gr
@@ -380,9 +389,11 @@ def train_model():
     useful_features = [(feature, coef) for feature, coef in zip(feature_names, coefficients) if coef != 0]
     not_useful_features = [feature for feature, coef in zip(feature_names, coefficients) if coef == 0]
 
-    equation_terms = [f"{coef:.4f} * {feature}" for feature, coef in useful_features]
+    equation_terms = [f"*{coef:.4f}* × *{feature}*" for feature, coef in useful_features]
     regression_equation = " + ".join(equation_terms)
-
+    regression_equation = "Cost of Ride = " + regression_equation
+    
+    actual_vs_pred_plot = actual_vs_predicted_plot(y_test, y_pred)
     useful_features_formatted = "\n".join(
         [f"- {feature}: {coef:.4f}" for feature, coef in useful_features]
     )
@@ -431,6 +442,9 @@ def train_model():
         "default_values": default_values,
         "feature_types": types,
         "original_data_html": original_data.head(3).to_html(classes="table table-striped"),
+        "original_data": original_data,
+        "actual_vs_predicted_plot": actual_vs_pred_plot
+        
     }
 
 def process_features_with_values(feature_string):
@@ -460,6 +474,53 @@ def process_features_without_values(feature_string):
         if item.strip()
     ]
 
+def actual_vs_predicted_plot(y_actual, y_pred):
+    """
+    Create a scatter plot for Actual vs Predicted values.
+
+    Parameters
+    ----------
+    y_actual : array-like
+        Actual target values.
+    y_pred : array-like
+        Predicted target values.
+
+    Returns
+    -------
+    go.Figure
+        A Plotly scatter plot.
+    """
+    fig = go.Figure()
+
+    # Add scatter points
+    fig.add_trace(go.Scatter(
+        x=y_actual,
+        y=y_pred,
+        mode="markers",
+        marker=dict(size=8, color="rgba(99, 110, 250, 0.7)", line=dict(width=1)),
+        name="Actual vs Predicted"
+    ))
+
+    # Add ideal reference line
+    min_val = min(min(y_actual), min(y_pred))
+    max_val = max(max(y_actual), max(y_pred))
+    fig.add_trace(go.Scatter(
+        x=[min_val, max_val],
+        y=[min_val, max_val],
+        mode="lines",
+        line=dict(dash="dash", color="gray"),
+        name="Ideal Line"
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title="Actual vs Predicted Values",
+        xaxis_title="Actual Values",
+        yaxis_title="Predicted Values",
+        template="plotly_white"
+    )
+    return fig
+
 
 def train_model_button():
     """
@@ -467,16 +528,23 @@ def train_model_button():
     Save a model card documenting the results using skops 0.10.0.
     Push the model and card to Hugging Face Hub.
     """
+
     # Train the model and get the results
     comprehensive_interface.trained_model = train_model()
     results = comprehensive_interface.trained_model
 
     # Extract results
+    mae = results["mae"]
+    r2 = results["r2"]
     scatter_plot = results["scatter_plot"]
     regression_equation = results["regression_equation"]
+    coefficients = results["coefficients"]  # NumPy array of coefficient values
+    feature_names = results["feature_names"]  # Ensure feature names are provided
     coefficients_plot = coefficients_progression_plot_with_tracking(results)
     mae_plot, r2_plot = performance_plots_with_gridsearch(results)
     original_data_html = results["original_data_html"]
+    original_data = results["original_data"]
+    actual_vs_pred_plot = results["actual_vs_predicted_plot"]
     feature_importance_text = (
         f"### Useful Features:\n {results['useful_features']}\n\n"
         f"### Non-Useful Features:\n {results['not_useful_features']}"
@@ -486,29 +554,143 @@ def train_model_button():
     model_path = "best_model.joblib"
     dump(results["best_model"], model_path)
 
-    # Prepare metadata using skops
-    metadata = metadata_from_config({
-        "Model type": "Dynamic Pricing Model",
-        "Dataset": "Dynamic Pricing Dataset",
-        "Model task": "Regression",
-        "Author": "Pranav Sharma",
-        "MAE": f"{results['mae']:.4f}",
-        "R2": f"{results['r2']:.4f}",
-    })
+    # Initialize a temporary repository
+    local_repo = mkdtemp(prefix="skops-")
+
+    # Save the model as a pickle file
+    pkl_name = "best_model.pkl"
+    with open(pkl_name, mode="wb") as f:
+        pickle.dump(results["best_model"], f)
+
+    # Initialize repository for Hugging Face Hub
+    hub_utils.init(
+        model=pkl_name,
+        requirements=["scikit-learn"],
+        dst=local_repo,
+        task="tabular-regression",
+        data=original_data,
+    )
+
+    # Prepare coefficients table
+    coefficients_text = ""#"### Model Coefficients:\n\n"
+    coefficients_text += "| Feature | Coefficient |\n|---------|-------------|\n"
+    coefficients_text += "\n".join(
+        [f"| {feature} | {value:.4f} |" for feature, value in zip(feature_names, coefficients)]
+    )
+
+    # Prepare hyperparameters
+    hyperparameters = results["best_model"].get_params()
+
+    hyperparameters_text = "### Hyperparameters:\n\n"
+    hyperparameters_text += "\n".join([f"- {param}: {value}" for param, value in hyperparameters.items()])
+
+    # Convert Plotly plot to an inline image for Markdown
+    actual_vs_pred_plot_path = Path(local_repo) / "actual_vs_predicted.png"
+    actual_vs_pred_plot.write_image(str(actual_vs_pred_plot_path), format="png", scale=2)
+
+    # Embed image in Markdown with a description
+    actual_vs_pred_plot_md = (
+        #"### Actual vs Predicted Plot\n\n"
+        "The following plot shows the relationship between the actual and predicted values. "
+        "The closer the points are to the diagonal line, the better the predictions. "
+        "The dashed line represents the ideal case where predictions perfectly match the actual values.\n\n"
+        "![Actual vs Predicted Plot](actual_vs_predicted.png)"
+    )
 
     # Create and save the model card
-    card = Card(metadata=metadata, title="Dynamic Pricing Model Card")
-    card_path = "model_card.md"
+    metadata = DatasetCardData(
+        language=["en"],
+        license="apache-2.0",
+        annotations_creators=["machine-generated"],
+        language_creators=["found"],
+        multilinguality="monolingual",
+        size_categories="10K<n<100K",
+        source_datasets=["original"],
+        task_categories=["regression"],
+        task_ids=["dynamic-pricing"],
+        pretty_name="Dynamic Pricing Model",
+    )
+    card = Card(model=pkl_name, metadata=metadata)
+    model_description = (
+        "This is a regression model trained on the Dynamic Pricing Dataset. "
+        "It was optimized using grid search with multiple hyperparameters."
+    )
+    card.add(
+    **{
+        "Model description": model_description,
+        "Model description/Intended uses & limitations": (
+            "This regression model is designed to predict the cost of rides based on various features such as expected ride duration, "
+            "number of drivers, and time of booking.\n\n"
+            "**Intended Uses**:\n"
+            "- **Dynamic Pricing Analysis**: Helps optimize pricing strategies for ride-hailing platforms.\n"
+            "- **Demand Forecasting**: Supports business decisions by estimating cost trends based on ride-specific parameters.\n\n"
+            "**Limitations**:\n"
+            "- **Feature Dependence**: The model's accuracy is highly dependent on the input features provided.\n"
+            "- **Dataset Specificity**: Performance may degrade if applied to datasets with significantly different distributions.\n"
+            "- **Outlier Sensitivity**: Predictions can be affected by extreme values in the dataset."
+        ),
+        "Model description/Training Procedure": "The model was trained using grid search to optimize hyperparameters. Cross-validation (5-fold) was performed to ensure robust evaluation. The best model was selected based on the lowest Mean Absolute Error (MAE) on the validation set.",
+        #"Hyperparameters": hyperparameters_text,
+        "Model description/Evaluation Results/Model Coefficients": coefficients_text,
+        "Model description/Evaluation Results/Regression Equation": regression_equation,
+        "Model description/Evaluation Results/Actual vs Predicted": (
+            actual_vs_pred_plot_md + "\n\n"
+            "The scatter plot above shows the predicted values against the actual values. The dashed line represents the ideal predictions "
+            "where the predicted values are equal to the actual values."
+        ),
+        "Model description/Evaluation Results": (
+            "The model achieved the following results on the test set:\n"
+            f"- **Mean Absolute Error (MAE)**: {mae}\n"
+            f"- **R² Score**: {r2}\n\n"
+            "Refer to the plots and tables for detailed performance insights."
+        ),
+        "How to Get Started with the Model": (
+            "To use this model:\n"
+            "1. **Install Dependencies**: Ensure `scikit-learn` and `pandas` are installed in your environment.\n"
+            "2. **Load the Model**: Download the saved model file and load it using `joblib`:\n"
+            "   ```python\n"
+            "   from joblib import load\n"
+            "   model = load('best_model.joblib')\n"
+            "   ```\n"
+            "3. **Prepare Input Features**: Create a DataFrame with the required input features in the same format as the training dataset.\n"
+            "4. **Make Predictions**: Use the `predict` method to generate predictions:\n"
+            "   ```python\n"
+            "   predictions = model.predict(input_features)\n"
+            "   ```"
+        ),
+        "Model Card Authors": "This model card was written by **Pranav Sharma**.",
+        "Model Card Contact": "For inquiries or feedback, you can contact the author via **[GitHub](https://github.com/PranavSharma)**.",
+        "Citation": (
+            "If you use this model, please cite it as follows:\n"
+            "```\n"
+            "@model{pranav_sharma_dynamic_pricing_model_2025,\n"
+            "  author       = {Pranav Sharma},\n"
+            "  title        = {Dynamic Pricing Model},\n"
+            "  year         = {2025},\n"
+            "  version      = {1.0.0},\n"
+            "  url          = {https://huggingface.co/PranavSharma/dynamic-pricing-model}\n"
+            "}\n"
+            "```"
+        ),
+    }
+)
+
+
+    card_path = Path(local_repo) / "README.md"
     card.save(card_path)
-    print("Model card saved as model_card.md")
+    print("Model card saved as README.md")
 
     # Push model and card to Hugging Face Hub
-    push_to_hub(
-        repo_name="dynamic-pricing-model",
-        files=[model_path, card_path],
-        repo_type="model"
-    )
-    print("Model and card pushed to Hugging Face Hub.")
+    try:
+        hub_utils.push(
+            repo_id=f"{User}/{repo_name}",
+            source=local_repo,
+            commit_message="Pushing model and README files to the repo!",
+            create_remote=True,
+        )
+        print("Model and card pushed to Hugging Face Hub.")
+    except Exception as e:
+        print(f"Failed to push to Hugging Face Hub: {e}")
 
     # Return outputs for display in Gradio
     return (
@@ -518,6 +700,7 @@ def train_model_button():
         mae_plot,
         r2_plot,
         coefficients_plot,
+        actual_vs_pred_plot,  # New output added
         results["top_models_html"],
         original_data_html,
         feature_importance_text,
@@ -581,8 +764,6 @@ def comprehensive_interface(*inputs):
     original_data_html = results["original_data_html"]
     top_models_html = results["top_models_html"]
 
-
-
     # Ensure useful and non-useful features are properly formatted
     useful_features = results.get("useful_features", "")
     not_useful_features = results.get("not_useful_features", "")
@@ -639,8 +820,10 @@ with gr.Blocks() as demo:
             original_data_output = gr.HTML(label="Original Dataset")
             top_models_output = gr.HTML(label="Top 10 Models")
         with gr.Column():
+            actual_vs_predicted_output = gr.Plot(label="Actual vs Predicted Plot")
             mae_plot_output = gr.Plot(label="MAE Plot")
             r2_plot_output = gr.Plot(label="R² Plot")
+            
         with gr.Column():
             coeff_plot_output = gr.Plot(label="Coefficient Progression")
             regression_eq_output = gr.Textbox(label="Regression Equation")
@@ -657,23 +840,24 @@ with gr.Blocks() as demo:
 
     # Predictions Section (Below Inputs)
     with gr.Row():
-        prediction_output = gr.Textbox(label="Prediction Result")
+        prediction_output = gr.Textbox(label="Result")
 
     # Connect training button
     train_button.click(
-        fn=train_model_button,
-        inputs=[],
-        outputs=[
-            prediction_output,
-            scatter_plot_output,
-            regression_eq_output,
-            mae_plot_output,
-            r2_plot_output,
-            coeff_plot_output,
-            top_models_output,
-            original_data_output,
-            output_feat_importance,
-        ],
+    fn=train_model_button,
+    inputs=[],
+    outputs=[
+        prediction_output,
+        scatter_plot_output,
+        regression_eq_output,
+        mae_plot_output,
+        r2_plot_output,
+        coeff_plot_output,
+        actual_vs_predicted_output,  # New output
+        top_models_output,
+        original_data_output,
+        output_feat_importance,
+    ],
     )
 
     # Connect prediction button

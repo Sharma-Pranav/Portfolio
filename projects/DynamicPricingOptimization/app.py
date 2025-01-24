@@ -392,7 +392,7 @@ def train_model():
     equation_terms = [f"*{coef:.4f}* × *{feature}*" for feature, coef in useful_features]
     regression_equation = " + ".join(equation_terms)
     regression_equation = "Cost of Ride = " + regression_equation
-    
+
     actual_vs_pred_plot = actual_vs_predicted_plot(y_test, y_pred)
     useful_features_formatted = "\n".join(
         [f"- {feature}: {coef:.4f}" for feature, coef in useful_features]
@@ -519,6 +519,13 @@ def actual_vs_predicted_plot(y_actual, y_pred):
         yaxis_title="Predicted Values",
         template="plotly_white"
     )
+    fig.add_annotation(
+        x=max_val,
+        y=max_val,
+        text="Ideal Line (y=x)",
+        showarrow=True,
+        arrowhead=2
+    )
     return fig
 
 
@@ -545,9 +552,21 @@ def train_model_button():
     original_data_html = results["original_data_html"]
     original_data = results["original_data"]
     actual_vs_pred_plot = results["actual_vs_predicted_plot"]
+
     feature_importance_text = (
-        f"### Useful Features:\n {results['useful_features']}\n\n"
-        f"### Non-Useful Features:\n {results['not_useful_features']}"
+        f"### Useful Features:\n"
+        + "".join(
+            [
+                f"- {feature}: {coef:.4f} "
+                f"(e.g., a unit increase in {feature} affects the cost by ${coef:.2f})\n"
+                for feature, coef in zip(
+                    results["useful_features"].splitlines(), 
+                    [float(line.split(":")[1]) for line in results["useful_features"].splitlines()]
+                )
+            ]
+        )
+        + "\n\n### Non-Useful Features:\n"
+        + "".join([f"- {feature}\n" for feature in results["not_useful_features"].splitlines()])
     )
 
     # Save the best model using joblib
@@ -642,7 +661,12 @@ def train_model_button():
             "The model achieved the following results on the test set:\n"
             f"- **Mean Absolute Error (MAE)**: {mae}\n"
             f"- **R² Score**: {r2}\n\n"
-            "Refer to the plots and tables for detailed performance insights."
+            "### Key Insights:\n"
+            "- Longer ride durations increase costs significantly, which may justify adding a surcharge for long-distance rides.\n"
+            "- Evening bookings reduce costs, potentially indicating lower demand during these hours.\n"
+            "- The model's accuracy is dependent on high-quality feature data.\n"
+
+            "\nRefer to the plots and tables for detailed performance insights."
         ),
         "How to Get Started with the Model": (
             "To use this model:\n"

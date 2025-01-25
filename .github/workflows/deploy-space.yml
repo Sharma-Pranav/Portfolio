@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository code
-      - name: Checkout code
+      # Step 1: Checkout the repository, including submodules
+      - name: Checkout code with submodules
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       # Step 2: Set up Python environment
       - name: Set up Python
@@ -20,17 +22,7 @@ jobs:
         with:
           python-version: '3.12.3'
 
-      # Step 3: Echo current working directory
-      - name: Echo working directory
-        run: |
-          echo "Current directory: $(pwd)"
-
-      # Step 4: List repository structure
-      - name: List repository structure
-        run: |
-          ls -R
-
-      # Step 5: Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: |
@@ -38,7 +30,7 @@ jobs:
           pip install -r requirements.txt
           pip install huggingface_hub
 
-      # Step 6: Push to Hugging Face
+      # Step 4: Push to Hugging Face
       - name: Push to Hugging Face
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         env:

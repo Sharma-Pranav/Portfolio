@@ -1,3 +1,7 @@
 [submodule "PortfolioWebsite/themes/academic-cv"]
-	path = PortfolioWebsite/themes/academic-cv
-	url = https://github.com/HugoBlox/theme-academic-cv
+    path = PortfolioWebsite/themes/academic-cv
+    url = https://github.com/HugoBlox/theme-academic-cv
+
+[submodule "projects/DynamicPricingOptimization/RidePricingInsightEngine"]
+    path = projects/DynamicPricingOptimization/RidePricingInsightEngine
+    url = https://github.com/YOUR_SUBMODULE_REPOSITORY.git

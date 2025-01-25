@@ -22,7 +22,14 @@ jobs:
         with:
           python-version: '3.12.3'
 
-      # Step 3: Install dependencies
+      # Step 3: Debug working directory
+      - name: Debug working directory
+        working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+
+      # Step 4: Install dependencies
       - name: Install dependencies
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: |
@@ -30,7 +37,12 @@ jobs:
           pip install -r requirements.txt
           pip install huggingface_hub
 
-      # Step 4: Push to Hugging Face
+      # Step 5: Set Hugging Face remote
+      - name: Set Hugging Face remote
+        working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
+        run: git remote add hf https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine
+
+      # Step 6: Push to Hugging Face
       - name: Push to Hugging Face
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         env:
@@ -39,4 +51,3 @@ jobs:
           echo "Logging into Hugging Face with token"
           huggingface-cli login --token "$HUGGINGFACE_TOKEN"
           git push hf main
-

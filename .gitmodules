@@ -4,4 +4,4 @@
 
 [submodule "projects/DynamicPricingOptimization/RidePricingInsightEngine"]
     path = projects/DynamicPricingOptimization/RidePricingInsightEngine
-    url = https://github.com/YOUR_SUBMODULE_REPOSITORY.git
+    url = https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine

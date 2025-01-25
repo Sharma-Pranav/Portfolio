@@ -22,11 +22,13 @@ jobs:
 
       # Step 3: Echo current working directory
       - name: Echo working directory
-        run: echo "Current directory: $(pwd)"
+        run: |
+          echo "Current directory: $(pwd)"
 
-      # Step 4: List files for debugging
+      # Step 4: List repository structure
       - name: List repository structure
-        run: ls -R
+        run: |
+          ls -R
 
       # Step 5: Install dependencies
       - name: Install dependencies

@@ -40,7 +40,7 @@ jobs:
       # Step 5: Set Hugging Face remote
       - name: Set Hugging Face remote
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
-        run: git remote add hf https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine
+        run: git remote add hf https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine || echo "Remote already exists"
 
       # Step 6: Push to Hugging Face
       - name: Push to Hugging Face
@@ -49,5 +49,5 @@ jobs:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
           echo "Logging into Hugging Face with token"
-          huggingface-cli login --token "$HUGGINGFACE_TOKEN"
+          huggingface-cli login --token "$HUGGINGFACE_TOKEN" --add-to-git-credential
           git push hf main

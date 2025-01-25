@@ -42,7 +42,11 @@ jobs:
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: git remote add hf https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine || echo "Remote already exists"
 
-      # Step 6: Push to Hugging Face
+      # Step 6: Configure Git Credential Helper
+      - name: Configure Git Credential Helper
+        run: git config --global credential.helper store
+
+      # Step 7: Push to Hugging Face
       - name: Push to Hugging Face
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         env:

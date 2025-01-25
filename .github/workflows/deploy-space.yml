@@ -20,18 +20,28 @@ jobs:
         with:
           python-version: '3.12.3'
 
-      # Step 3: Install dependencies
+      # Step 3: Echo current working directory
+      - name: Echo working directory
+        run: echo "Current directory: $(pwd)"
+
+      # Step 4: List files for debugging
+      - name: List repository structure
+        run: ls -R
+
+      # Step 5: Install dependencies
       - name: Install dependencies
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: |
+          echo "Installing dependencies from $(pwd)"
           pip install -r requirements.txt
           pip install huggingface_hub
 
-      # Step 4: Push to Hugging Face
+      # Step 6: Push to Hugging Face
       - name: Push to Hugging Face
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          echo "Pushing to Hugging Face from $(pwd)"
           huggingface-cli login --token $HF_TOKEN
           git push hf main

@@ -34,8 +34,9 @@ jobs:
       - name: Push to Hugging Face
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
-          echo "Pushing to Hugging Face from $(pwd)"
-          huggingface-cli login --token $HF_TOKEN
+          echo "Logging into Hugging Face with token"
+          huggingface-cli login --token "$HUGGINGFACE_TOKEN"
           git push hf main
+

@@ -14,22 +14,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Python environment
+      # Step 2: Navigate to the project directory
+      - name: Navigate to project folder
+        run: cd projects/DynamicPricingOptimization/RidePricingInsightEngine
+
+      # Step 3: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.3'
 
-      # Step 3: Install dependencies
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: |
+          cd projects/DynamicPricingOptimization/RidePricingInsightEngine
           pip install -r requirements.txt
           pip install huggingface_hub
 
-      # Step 4: Authenticate and push to Hugging Face
+      # Step 5: Push to Hugging Face
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          cd projects/DynamicPricingOptimization/RidePricingInsightEngine
           huggingface-cli login --token $HF_TOKEN
           git push hf main

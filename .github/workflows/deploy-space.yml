@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository, including submodules
+      # Step 1: Checkout the repository with submodules
       - name: Checkout code with submodules
         uses: actions/checkout@v3
         with:

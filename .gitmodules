@@ -5,3 +5,12 @@
 [submodule "projects/DynamicPricingOptimization/RidePricingInsightEngine"]
     path = projects/DynamicPricingOptimization/RidePricingInsightEngine
     url = https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine
+[submodule "Website/themes/HugoPlate"]
+	path = Website/themes/HugoPlate
+	url = https://github.com/zeon-studio/HugoPlate
+[submodule "portfolio-website/themes/adritian"]
+	path = portfolio-website/themes/adritian
+	url = https://github.com/zetxek/adritian-free-hugo-theme.git
+[submodule "themes/hugo-coder"]
+	path = themes/hugo-coder
+	url = https://github.com/luizdepra/hugo-coder.git

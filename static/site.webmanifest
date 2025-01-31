@@ -1,0 +1,8 @@
+{
+    "name": "Pranav's Portfolio",
+    "short_name": "Portfolio",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff"
+  }

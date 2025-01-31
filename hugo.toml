@@ -1,0 +1,128 @@
+baseURL = "https://orange-guacamole-r7j5ggjg55pfx7g7-1313.app.github.dev/"
+languageCode = "en-us"
+title = "Pranav Sharma"
+theme = "hugo-coder"
+defaultContentLanguage = "en"
+enableEmoji = true
+
+pagerSize = 6
+
+[markup]
+[markup.highlight]
+noClasses = false
+
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+
+[params]
+  author = "Pranav Sharma"
+  description = "AI Researcher | Data Scientist | Building Scalable AI Solutions"
+  keywords = ["AI Researcher", "Machine Learning", "Data Science", "MLOps", "Industrial AI"]
+  avatarURL = "/img/portrait.jpg"  # Ensure this image is in "static/img/"
+  favicon = "/favicon.png"  # Move this to "static/favicon.png" for proper recognition
+  info = ["AI Engineer", "Building AI for Industrial Applications", "MLOps & Cloud AI"]
+  dateFormat = "2 January 2006"
+  since = 2025
+  rtl = false
+  colorScheme = "auto"
+  hideColorSchemeToggle = false
+  maxSeeAlsoItems = 5
+  disableLiveReload = true
+  disableWebAppManifest = true
+  disableManifest = true
+  disableDefaultJsScripts = false
+  # Custom CSS
+  customCSS = []
+
+  # Custom JS
+  customJS = []
+
+  # Custom remote JS files
+  customRemoteJS = []
+
+  [taxonomies]
+  category = "categories"
+  series = "series"
+  tag = "tags"
+  author = "authors"
+
+  [[params.social]]
+  name = "Github"
+  icon = "fa-brands fa-github fa-2x"
+  weight = 1
+  url = "https://github.com/Sharma-Pranav"
+
+  [[params.social]]
+  name = "LinkedIn"
+  icon = "fa-brands fa-linkedin fa-2x"
+  weight = 4
+  url = "https://www.linkedin.com/in/topranav/"
+
+  [[params.social]]
+  name = "Medium"
+  icon = "fa-brands fa-medium fa-2x"
+  weight = 5
+  url = "https://medium.com/@pranavsharma619"
+
+  [[params.social]]
+  name = "Hugging Face"
+  icon = "fa-solid fa-link fa-2x"
+  weight = 6
+  url = "https://huggingface.co/PranavSharma"
+
+
+  [languages.en]
+  languageName = ":uk:"
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+
+  [[menu.main]]
+    identifier = "projects"
+    name = "Projects"
+    url = "/projects/"
+    weight = 2
+
+  [[menu.main]]
+    name = "Blog"
+    url = "/blog/"
+    weight = 3
+
+  [[menu.main]]
+    name = "Contact"
+    url = "/contact/"
+    weight = 4
+
+
+[mediaTypes]
+  [mediaTypes."text/css"]
+    suffixes = ["css"]
+    delimiter = ""
+
+  [mediaTypes."application/javascript"]
+    suffixes = ["js"]
+    delimiter = ""
+
+[outputFormats]
+  [outputFormats.HTML]
+    mediaType = "text/html"
+  [outputFormats.CSS]
+    mediaType = "text/css"
+  [outputFormats.JS]
+    mediaType = "application/javascript"
+
+
+[outputs]
+  home = ["HTML", "RSS"]
+
+
+[server]
+  disableLiveReload = true
+  disableFastRender = true
+
+[pwa]
+  enabled = false

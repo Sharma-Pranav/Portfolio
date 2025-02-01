@@ -16,21 +16,18 @@ Portfolio/
 │   └── public/                           # Generated static site output after running Hugo
 │
 ├── projects/                             # Folder containing project implementations
-│   ├── RetailDemandForecaster/           # Time-series forecasting project
-│   │   ├── notebooks/                    # Jupyter notebooks for experiments
-│   │   ├── src/                          # Python scripts and model code
-│   │   ├── data/                         # Datasets or links to external datasets
-│   │   └── README.md                     # Documentation for this project
-│   ├── PredictiveMaintenanceSystem/      # Predictive maintenance solution
-│   │   ├── notebooks/
-│   │   ├── src/
-│   │   ├── data/
-│   │   └── README.md
-│   └── EnterpriseKnowledgeSummarizer/    # Document summarization AI tool
-│       ├── notebooks/
-│       ├── src/
-│       ├── data/
-│       └── README.md
+│   ├── DynamicPricingOptimization/       # AI-driven pricing model
+│   ├── TurnoverForecasting/              # Revenue prediction using time-series models
+│   ├── OperationalCostForecasting/       # Cost forecasting with machine learning
+│   ├── DemandForecasting/                # Supply chain demand prediction
+│   ├── PricingElasticityAnalysis/        # Pricing elasticity estimation for businesses
+│   ├── PredictiveMaintenance/            # Equipment failure prediction for proactive maintenance
+│   ├── RetailDemandForecasting/          # Retail sales forecasting for inventory management
+│   ├── CustomerChurnPrediction/          # Customer retention and churn analytics
+│   ├── CreditRiskAssessment/             # Credit scoring and risk analysis
+│   ├── FraudDetection/                   # Real-time fraud detection
+│   ├── FaultDetection/                   # Manufacturing defect detection using AI
+│   └── README.md                         # Documentation for all projects
 │
 ├── README.md                             # Global repository documentation
 ├── LICENSE                               # License for this repository
@@ -53,42 +50,68 @@ Once deployed, my portfolio will be accessible at: [Your Portfolio URL] (Update 
 
 ## 📊 Featured Projects
 
-### 1. Retail Demand Forecaster
+### 1. Dynamic Pricing Optimization
 
-- **Folder**: `projects/RetailDemandForecaster/`
-- **Objective**: Predict retail demand using time-series models to improve inventory management.
+- **Folder**: `projects/DynamicPricingOptimization/`
+- **Objective**: Develop AI-driven dynamic pricing strategies for businesses.
 - **Key Features**:
-  - Walmart Store Sales dataset
-  - Streamlit-based dashboard for interactive analysis
-  - Deployment-ready pre-trained models
-- **Tech Stack**: Python, Scikit-learn, Streamlit, Plotly
-- **View Project README**: [Link to README](projects/RetailDemandForecaster/README.md)
+  - Data-driven pricing models based on real-time demand and market trends
+  - Deployment-ready interactive dashboard
+  - Model interpretability and A/B testing insights
+- **Tech Stack**: Python, Scikit-learn, Gradio, FastAPI
+- **View Project README**: [Link to README](projects/DynamicPricingOptimization/README.md)
 
 ---
 
 ### 2. Predictive Maintenance System
 
-- **Folder**: `projects/PredictiveMaintenanceSystem/`
+- **Folder**: `projects/PredictiveMaintenance/`
 - **Objective**: Predict equipment failures to minimize downtime and optimize maintenance.
 - **Key Features**:
   - NASA Turbofan Engine Degradation dataset
   - REST API for real-time predictions
   - Feature importance analysis for interpretability
 - **Tech Stack**: Python, Flask/FastAPI, PyTorch, Seaborn
-- **View Project README**: [Link to README](projects/PredictiveMaintenanceSystem/README.md)
+- **View Project README**: [Link to README](projects/PredictiveMaintenance/README.md)
 
 ---
 
-### 3. Enterprise Knowledge Summarizer
+### 3. Demand Forecasting
 
-- **Folder**: `projects/EnterpriseKnowledgeSummarizer/`
-- **Objective**: Summarize large documents for faster knowledge retrieval in enterprise settings.
+- **Folder**: `projects/DemandForecasting/`
+- **Objective**: Forecast raw material demand using advanced time-series models.
 - **Key Features**:
-  - Fine-tuned Hugging Face transformer models
-  - Interactive Streamlit/Gradio app for summarization
-  - Support for large datasets like Wikipedia dumps
-- **Tech Stack**: Python, Hugging Face, Streamlit/Gradio, PyTorch
-- **View Project README**: [Link to README](projects/EnterpriseKnowledgeSummarizer/README.md)
+  - Uses Monash Forecasting Repository datasets
+  - Hyperparameter-tuned machine learning models
+  - Deployment-ready model with visualization tools
+- **Tech Stack**: Python, Scikit-learn, XGBoost, Matplotlib
+- **View Project README**: [Link to README](projects/DemandForecasting/README.md)
+
+---
+
+### 4. Customer Churn Prediction
+
+- **Folder**: `projects/CustomerChurnPrediction/`
+- **Objective**: Identify customers likely to churn using predictive analytics.
+- **Key Features**:
+  - Uses Telco Customer Churn Dataset
+  - Feature engineering and model explainability
+  - Gradio-based interactive user interface
+- **Tech Stack**: Python, Scikit-learn, Gradio, SHAP
+- **View Project README**: [Link to README](projects/CustomerChurnPrediction/README.md)
+
+---
+
+### 5. Fraud Detection System
+
+- **Folder**: `projects/FraudDetection/`
+- **Objective**: Detect fraudulent transactions in real-time.
+- **Key Features**:
+  - Uses Kaggle Fraud Detection dataset
+  - Anomaly detection using autoencoders
+  - Deployed with a real-time monitoring system
+- **Tech Stack**: Python, PyTorch, FastAPI, Scikit-learn
+- **View Project README**: [Link to README](projects/FraudDetection/README.md)
 
 ---
 
@@ -159,5 +182,3 @@ If you'd like to get in touch, feel free to connect:
 - **Email**: topranav@outlook.com
 - **LinkedIn**: https://www.linkedin.com/in/topranav/
 - **GitHub**: [Sharma-Pranav](https://github.com/Sharma-Pranav)
-
----

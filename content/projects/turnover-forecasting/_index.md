@@ -3,7 +3,8 @@ title: "TurnoverForecasting"
 date: 2025-01-31
 type: "projects"
 layout: "single"
-summary: "Predictive Maintenance System"
+summary: "Predictive Maintenance System
+"
 menu:
   main:
     parent: "projects"

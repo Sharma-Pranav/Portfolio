@@ -3,7 +3,8 @@ title: "OperationalCostForecasting"
 date: 2025-01-31
 type: "projects"
 layout: "single"
-summary: "Retail Demand Forecaster"
+summary: "Retail Demand Forecaster
+"
 menu:
   main:
     parent: "projects"
@@ -19,7 +20,7 @@ This project focuses on creating a robust demand forecasting system for the reta
 
 ## Dataset
 
-- **Source**: [Walmart Store Sales Dataset](https://www.kaggle.com/datasets/rohanrao/walmart-store-sales)
+- **Source **: [Walmart Store Sales Dataset](https://www.kaggle.com/datasets/rohanrao/walmart-store-sales)
 - **Description**: Weekly sales data from Walmart stores with additional features like holidays and weather information.
 
 ## Features

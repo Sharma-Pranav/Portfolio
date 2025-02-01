@@ -21,13 +21,13 @@ This project builds an AI-driven dynamic pricing optimization model for retail a
 
 ## Dataset
 
-- **Source: ** [Dynamic Pricing Dataset (Kaggle)](https://www.kaggle.com/datasets/arashnic/dynamic-pricing-dataset)
+- **Source:** [Dynamic Pricing Dataset (Kaggle)](https://www.kaggle.com/datasets/arashnic/dynamic-pricing-dataset)
 - **Description: ** A dataset containing historical sales, pricing, and demand data to train models for price elasticity analysis and revenue maximization.
 
 ## Repository & Deployment
 
-- 🔗 **GitHub Repository: ** [View on GitHub](https://github.com/Sharma-Pranav/Portfolio/tree/main/projects/DynamicPricingOptimization)
-- 🚀 **Live Demo: ** [Try on Hugging Face](https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine)
+- 🔗 **GitHub Repository:** [View on GitHub](https://github.com/Sharma-Pranav/Portfolio/tree/main/projects/DynamicPricingOptimization)
+- 🚀 **Live Demo:** [Try on Hugging Face](https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine)
 
 ## Features
 

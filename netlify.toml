@@ -1,0 +1,9 @@
+[build]
+  base = ""  # No subfolder needed anymore (hugo.toml is in root)
+  command = "hugo --gc --minify"
+  publish = "public"
+
+[context.production.environment]
+  HUGO_VERSION = "0.141.0"
+  HUGO_ENV = "production"
+  HUGO_ENABLEGITINFO = "true"

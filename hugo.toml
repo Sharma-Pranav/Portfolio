@@ -88,14 +88,19 @@ unsafe = true
     weight = 2
 
   [[menu.main]]
+    name = "Resume"
+    url = "https://docs.google.com/document/d/1cc3x2kFoIBaZcrliYDa4-BbtOrzZc0_J/edit?usp=sharing&ouid=112676903242295200580&rtpof=true&sd=true"
+    weight = 3
+
+  [[menu.main]]
     name = "Blog"
     url = "/blog/"
-    weight = 3
+    weight = 4
 
   [[menu.main]]
     name = "Contact"
     url = "/contact/"
-    weight = 4
+    weight = 5
 
 
 [mediaTypes]

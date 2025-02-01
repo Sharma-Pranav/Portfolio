@@ -6,7 +6,7 @@ This project aims to predict equipment failures and estimate the remaining usefu
 
 ## Dataset
 
-- **Source**: NASA Turbofan Engine Degradation Dataset
+- **Source**: [NBER-CES Manufacturing Industry Database](https://www.nber.org/research/data/nber-ces-manufacturing-industry-database)
 - **Description**: Multivariate time series data capturing engine degradation metrics.
 
 ## Features

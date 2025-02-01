@@ -1,9 +1,9 @@
 [build]
-  command = "hugo --minify"
+  command = "hugo --gc --minify"
   publish = "public"
 
 
 [context.production]
-  command = "hugo --minify"
+  command = "hugo --gc --minify"
   publish = "public"
   HUGO_VERSION = "0.141.0"  # Replace with latest Hugo version

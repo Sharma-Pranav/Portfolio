@@ -4,34 +4,28 @@ Welcome to my **Portfolio Repository**! This repository showcases my expertise i
 
 ## 📂 Repository Structure
 ```plaintext
-Portfolio/
-├── PortfolioWebsite/                     # Hugo-based portfolio website
-│   ├── archetypes/                       # Default archetypes for Hugo content
-│   ├── content/                          # Markdown files for pages like landing page, resume, and projects
-│   ├── static/                           # Static assets (images, CSS, JS, etc.)
-│   ├── themes/                           # Custom Hugo themes (e.g., Adritian)
-│   ├── config.toml                       # Hugo configuration file
-│   ├── scripts/                          # Scripts for deployment or build automation
-│   ├── README.md                         # Documentation for the portfolio website
-│   └── public/                           # Generated static site output after running Hugo
-│
+PORTFOLIO/
+├── .conda/                               # Conda environment configurations
+├── .github/                              # GitHub workflows and configurations
+├── content/                              # Hugo content for static site
+├── layouts/                              # Custom Hugo layouts
 ├── projects/                             # Folder containing project implementations
 │   ├── DynamicPricingOptimization/       # AI-driven pricing model
-│   ├── TurnoverForecasting/              # Revenue prediction using time-series models
 │   ├── OperationalCostForecasting/       # Cost forecasting with machine learning
-│   ├── DemandForecasting/                # Supply chain demand prediction
-│   ├── PricingElasticityAnalysis/        # Pricing elasticity estimation for businesses
-│   ├── PredictiveMaintenance/            # Equipment failure prediction for proactive maintenance
-│   ├── RetailDemandForecasting/          # Retail sales forecasting for inventory management
-│   ├── CustomerChurnPrediction/          # Customer retention and churn analytics
-│   ├── CreditRiskAssessment/             # Credit scoring and risk analysis
-│   ├── FraudDetection/                   # Real-time fraud detection
-│   ├── FaultDetection/                   # Manufacturing defect detection using AI
-│   └── README.md                         # Documentation for all projects
+│   ├── TurnoverForecasting/              # Revenue prediction using time-series models
 │
+├── public/                               # Generated site files
+├── resources/                            # Additional assets for Hugo
+├── static/                               # Static assets (images, CSS, JS, etc.)
+├── themes/hugo-coder/                    # Hugo theme customization
+│
+├── .gitignore                            # To ignore unnecessary files
+├── .gitmodules                           # Submodule configurations
+├── .hugo_build.lock                      # Hugo build lock file
+├── copy_readmes.sh                       # Script to copy README files across projects
+├── hugo.toml                             # Hugo site configuration
+├── netlify.toml                          # Netlify deployment settings
 ├── README.md                             # Global repository documentation
-├── LICENSE                               # License for this repository
-└── .gitignore                            # To ignore unnecessary files
 ```
 
 ## 🌐 Portfolio Website
@@ -63,55 +57,29 @@ Once deployed, my portfolio will be accessible at: [Your Portfolio URL] (Update 
 
 ---
 
-### 2. Predictive Maintenance System
+### 2. Operational Cost Forecasting
 
-- **Folder**: `projects/PredictiveMaintenance/`
-- **Objective**: Predict equipment failures to minimize downtime and optimize maintenance.
+- **Folder**: `projects/OperationalCostForecasting/`
+- **Objective**: Forecast business operational costs using machine learning models.
 - **Key Features**:
-  - NASA Turbofan Engine Degradation dataset
-  - REST API for real-time predictions
-  - Feature importance analysis for interpretability
-- **Tech Stack**: Python, Flask/FastAPI, PyTorch, Seaborn
-- **View Project README**: [Link to README](projects/PredictiveMaintenance/README.md)
+  - Uses NBER-CES Manufacturing Industry dataset
+  - Feature engineering for cost optimization
+  - Dashboard for interactive visualization
+- **Tech Stack**: Python, Pandas, Scikit-learn, Plotly
+- **View Project README**: [Link to README](projects/OperationalCostForecasting/README.md)
 
 ---
 
-### 3. Demand Forecasting
+### 3. Turnover Forecasting
 
-- **Folder**: `projects/DemandForecasting/`
-- **Objective**: Forecast raw material demand using advanced time-series models.
+- **Folder**: `projects/TurnoverForecasting/`
+- **Objective**: Predict revenue turnover trends using time-series forecasting.
 - **Key Features**:
-  - Uses Monash Forecasting Repository datasets
-  - Hyperparameter-tuned machine learning models
-  - Deployment-ready model with visualization tools
-- **Tech Stack**: Python, Scikit-learn, XGBoost, Matplotlib
-- **View Project README**: [Link to README](projects/DemandForecasting/README.md)
-
----
-
-### 4. Customer Churn Prediction
-
-- **Folder**: `projects/CustomerChurnPrediction/`
-- **Objective**: Identify customers likely to churn using predictive analytics.
-- **Key Features**:
-  - Uses Telco Customer Churn Dataset
-  - Feature engineering and model explainability
-  - Gradio-based interactive user interface
-- **Tech Stack**: Python, Scikit-learn, Gradio, SHAP
-- **View Project README**: [Link to README](projects/CustomerChurnPrediction/README.md)
-
----
-
-### 5. Fraud Detection System
-
-- **Folder**: `projects/FraudDetection/`
-- **Objective**: Detect fraudulent transactions in real-time.
-- **Key Features**:
-  - Uses Kaggle Fraud Detection dataset
-  - Anomaly detection using autoencoders
-  - Deployed with a real-time monitoring system
-- **Tech Stack**: Python, PyTorch, FastAPI, Scikit-learn
-- **View Project README**: [Link to README](projects/FraudDetection/README.md)
+  - Uses NBER-CES Manufacturing dataset
+  - SARIMA and LSTM-based forecasting models
+  - Interactive analysis dashboard
+- **Tech Stack**: Python, TensorFlow, Scikit-learn, Streamlit
+- **View Project README**: [Link to README](projects/TurnoverForecasting/README.md)
 
 ---
 
@@ -182,3 +150,5 @@ If you'd like to get in touch, feel free to connect:
 - **Email**: topranav@outlook.com
 - **LinkedIn**: https://www.linkedin.com/in/topranav/
 - **GitHub**: [Sharma-Pranav](https://github.com/Sharma-Pranav)
+
+---

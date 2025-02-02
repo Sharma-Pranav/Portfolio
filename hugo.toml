@@ -21,7 +21,9 @@ unsafe = true
   keywords = ["AI Researcher", "Machine Learning", "Data Science", "MLOps", "Industrial AI"]
   avatarURL = "/img/portrait.jpg"  # Ensure this image is in "static/img/"
   favicon = "/favicon.png"  # Move this to "static/favicon.png" for proper recognition
-  info = ["AI Engineer", "Building AI for Industrial Applications", "MLOps & Cloud AI"]
+  info = ["AI Expert & MLOps Specialist",
+    "Building AI for Industrial Applications",
+    "Scalable AI & Cloud Deployments"]
   dateFormat = "2 January 2006"
   since = 2025
   rtl = false

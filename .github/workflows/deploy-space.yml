@@ -1,9 +1,12 @@
-name: Deploy to Hugging Face
+name: Deploy to Hugging Face 
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "projects/DynamicPricingOptimization/**"
+      - "projects/TurnoverForecasting/**"
 
 jobs:
   deploy:
@@ -23,35 +26,61 @@ jobs:
           python-version: '3.12.3'
 
       # Step 3: Debug working directory
-      - name: Debug working directory
+      - name: Debug working directory (DynamicPricingOptimization)
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: |
           echo "Current directory: $(pwd)"
           ls -la
 
+      - name: Debug working directory (TurnoverForecasting)
+        working-directory: projects/TurnoverForecasting
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+
       # Step 4: Install dependencies
-      - name: Install dependencies
+      - name: Install dependencies (DynamicPricingOptimization)
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: |
           echo "Installing dependencies from $(pwd)"
           pip install -r requirements.txt
           pip install huggingface_hub
 
+      - name: Install dependencies (TurnoverForecasting)
+        working-directory: projects/TurnoverForecasting
+        run: |
+          echo "Installing dependencies from $(pwd)"
+          pip install -r requirements.txt
+          pip install huggingface_hub
+
       # Step 5: Set Hugging Face remote
-      - name: Set Hugging Face remote
+      - name: Set Hugging Face remote (DynamicPricingOptimization)
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         run: git remote add hf https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine || echo "Remote already exists"
+
+      - name: Set Hugging Face remote (TurnoverForecasting)
+        working-directory: projects/TurnoverForecasting
+        run: git remote add hf https://huggingface.co/spaces/PranavSharma/merck-turnover-forecast || echo "Remote already exists"
 
       # Step 6: Configure Git Credential Helper
       - name: Configure Git Credential Helper
         run: git config --global credential.helper store
 
       # Step 7: Push to Hugging Face
-      - name: Push to Hugging Face
+      - name: Push to Hugging Face (DynamicPricingOptimization)
         working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
         env:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
           echo "Logging into Hugging Face with token"
           huggingface-cli login --token "$HUGGINGFACE_TOKEN" --add-to-git-credential
-          git push hf main
+          git push hf main "Inside https://github.com/Sharma-Pranav/Portfolio/blob/main/.github/workflows/deploy-space.yml"
+
+      - name: Push to Hugging Face (TurnoverForecasting)
+        working-directory: projects/TurnoverForecasting
+        env:
+          HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+        run: |
+          echo "Logging into Hugging Face with token"
+          huggingface-cli login --token "$HUGGINGFACE_TOKEN" --add-to-git-credential
+          git push hf main "Inside https://github.com/Sharma-Pranav/Portfolio/blob/main/.github/workflows/deploy-space.yml"

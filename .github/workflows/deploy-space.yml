@@ -13,47 +13,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      # Step 1: Checkout the repository code
+      - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.3'
 
-      - name: Install Dependencies
+      # Step 3: Install dependencies
+      - name: Install dependencies
         run: |
-          pip install -r projects/DynamicPricingOptimization/RidePricingInsightEngine/requirements.txt
-          pip install -r projects/TurnoverForecasting/requirements.txt
+          pip install -r requirements.txt
           pip install huggingface_hub
 
-      - name: Authenticate with Hugging Face
+      # Step 4: Authenticate and push to Hugging Face
+      - name: Push to Hugging Face
         env:
-          HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          huggingface-cli login --token "$HUGGINGFACE_TOKEN" --add-to-git-credential
-
-      - name: Set Git Config
-        run: |
-          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
-          git config --global user.name "Pranav Sharma"
-
-      - name: Sync DynamicPricingOptimization to Hugging Face
-        if: contains(github.event.head_commit.modified, 'projects/DynamicPricingOptimization/')
-        run: |
-          git clone https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine hf-dynamic
-          rsync -av --delete projects/DynamicPricingOptimization/RidePricingInsightEngine/ hf-dynamic/
-          cd hf-dynamic
-          git add .
-          git commit -m "Auto-deploy DynamicPricingOptimization" || echo "No changes to commit"
-          git push origin main --force
-
-      - name: Sync TurnoverForecasting to Hugging Face
-        if: contains(github.event.head_commit.modified, 'projects/TurnoverForecasting/')
-        run: |
-          git clone https://huggingface.co/spaces/PranavSharma/merck-turnover-forecast hf-turnover
-          rsync -av --delete projects/TurnoverForecasting/ hf-turnover/
-          cd hf-turnover
-          git add .
-          git commit -m "Auto-deploy TurnoverForecasting" || echo "No changes to commit"
-          git push origin main --force
+          huggingface-cli login --token $HF_TOKEN
+          git push hf main

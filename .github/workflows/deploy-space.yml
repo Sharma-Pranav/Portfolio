@@ -39,7 +39,7 @@ jobs:
           git clone https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine hf-dynamic
           rsync -av --delete projects/DynamicPricingOptimization/RidePricingInsightEngine/ hf-dynamic/
           cd hf-dynamic
-          git config --global user.email "your-email@example.com"
+          git config --global user.email "pranavsharma619@gmail.com"
           git config --global user.name "Pranav Sharma"
           git add .
           git commit -m "Auto-deploy DynamicPricingOptimization" || echo "No changes to commit"
@@ -51,7 +51,7 @@ jobs:
           git clone https://huggingface.co/spaces/PranavSharma/merck-turnover-forecast hf-turnover
           rsync -av --delete projects/TurnoverForecasting/ hf-turnover/
           cd hf-turnover
-          git config --global user.email "your-email@example.com"
+          git config --global user.email "pranavsharma619@gmail.com"
           git config --global user.name "Pranav Sharma"
           git add .
           git commit -m "Auto-deploy TurnoverForecasting" || echo "No changes to commit"

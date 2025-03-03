@@ -9,7 +9,7 @@ from neuralforecast.losses.pytorch import MAE
 # 📌 Load Data
 df = pd.read_csv("data/Top_12_German_Companies_Financial_Data.csv")  # Organized in `data/` folder
 df = df[df["Company"] == "Merck KGaA"].copy()
-
+# added test comment
 df["Period"] = pd.to_datetime(df["Period"], format="%m/%d/%Y")
 df = df.sort_values(by="Period")
 

@@ -13,74 +13,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository with submodules
-      - name: Checkout code with submodules
+      - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          submodules: recursive
 
-      # Step 2: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.3'
 
-      # Step 3: Debug working directory
-      - name: Debug working directory (DynamicPricingOptimization)
-        working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
+      - name: Install Dependencies
         run: |
-          echo "Current directory: $(pwd)"
-          ls -la
-
-      - name: Debug working directory (TurnoverForecasting)
-        working-directory: projects/TurnoverForecasting
-        run: |
-          echo "Current directory: $(pwd)"
-          ls -la
-
-      # Step 4: Install dependencies
-      - name: Install dependencies (DynamicPricingOptimization)
-        working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
-        run: |
-          echo "Installing dependencies from $(pwd)"
-          pip install -r requirements.txt
+          pip install -r projects/DynamicPricingOptimization/RidePricingInsightEngine/requirements.txt
+          pip install -r projects/TurnoverForecasting/requirements.txt
           pip install huggingface_hub
 
-      - name: Install dependencies (TurnoverForecasting)
-        working-directory: projects/TurnoverForecasting
-        run: |
-          echo "Installing dependencies from $(pwd)"
-          pip install -r requirements.txt
-          pip install huggingface_hub
-
-      # Step 5: Set Hugging Face remote
-      - name: Set Hugging Face remote (DynamicPricingOptimization)
-        working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
-        run: git remote add hf https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine || echo "Remote already exists"
-
-      - name: Set Hugging Face remote (TurnoverForecasting)
-        working-directory: projects/TurnoverForecasting
-        run: git remote add hf https://huggingface.co/spaces/PranavSharma/merck-turnover-forecast || echo "Remote already exists"
-
-      # Step 6: Configure Git Credential Helper
-      - name: Configure Git Credential Helper
-        run: git config --global credential.helper store
-
-      # Step 7: Push to Hugging Face
-      - name: Push to Hugging Face (DynamicPricingOptimization)
-        working-directory: projects/DynamicPricingOptimization/RidePricingInsightEngine
+      - name: Authenticate with Hugging Face
         env:
           HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
-          echo "Logging into Hugging Face with token"
           huggingface-cli login --token "$HUGGINGFACE_TOKEN" --add-to-git-credential
-          git push hf main "Inside https://github.com/Sharma-Pranav/Portfolio/blob/main/.github/workflows/deploy-space.yml"
 
-      - name: Push to Hugging Face (TurnoverForecasting)
-        working-directory: projects/TurnoverForecasting
-        env:
-          HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+      - name: Sync DynamicPricingOptimization to Hugging Face
+        if: contains(github.event.head_commit.modified, 'projects/DynamicPricingOptimization/')
         run: |
-          echo "Logging into Hugging Face with token"
-          huggingface-cli login --token "$HUGGINGFACE_TOKEN" --add-to-git-credential
-          git push hf main "Inside https://github.com/Sharma-Pranav/Portfolio/blob/main/.github/workflows/deploy-space.yml"
+          git clone https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine hf-dynamic
+          rsync -av --delete projects/DynamicPricingOptimization/RidePricingInsightEngine/ hf-dynamic/
+          cd hf-dynamic
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "Pranav Sharma"
+          git add .
+          git commit -m "Auto-deploy DynamicPricingOptimization" || echo "No changes to commit"
+          git push origin main --force
+
+      - name: Sync TurnoverForecasting to Hugging Face
+        if: contains(github.event.head_commit.modified, 'projects/TurnoverForecasting/')
+        run: |
+          git clone https://huggingface.co/spaces/PranavSharma/merck-turnover-forecast hf-turnover
+          rsync -av --delete projects/TurnoverForecasting/ hf-turnover/
+          cd hf-turnover
+          git config --global user.email "your-email@example.com"
+          git config --global user.name "Pranav Sharma"
+          git add .
+          git commit -m "Auto-deploy TurnoverForecasting" || echo "No changes to commit"
+          git push origin main --force

@@ -1,68 +1,129 @@
-import gradio as gr
-import pandas as pd
 import numpy as np
+import pandas as pd
+import itertools
 import plotly.graph_objects as go
-from neuralforecast import NeuralForecast
-from neuralforecast.models import LSTM
-from neuralforecast.losses.pytorch import MAE
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from sklearn.metrics import mean_absolute_error
+import gradio as gr
+import warnings
+warnings.filterwarnings("ignore")
+# Set random seed for reproducibility
+np.random.seed(42)
 
-# 📌 Load Data
-df = pd.read_csv("data/Top_12_German_Companies_Financial_Data.csv")  # Organized in `data/` folder
-df = df[df["Company"] == "Merck KGaA"].copy()
-# added test comment
-print("Data Loaded Successfully!")
+# Load the dataset
+df = pd.read_csv("data/Top_12_German_Companies_Financial_Data.csv")
+companies = np.unique(df.Company)
+company = companies[9]
+print(f"Company: {company}")
+
+# Filter for the selected company
+df = df[df["Company"] == company].copy()
 df["Period"] = pd.to_datetime(df["Period"], format="%m/%d/%Y")
-
 df = df.sort_values(by="Period")
-
+df.set_index("Period", inplace=True)
 df["Revenue"] = pd.to_numeric(df["Revenue"], errors="coerce")
-df = df.rename(columns={"Period": "ds", "Revenue": "y"})
-df["unique_id"] = "all"
-df = df[["unique_id", "ds", "y"]]
+series = df['Revenue']
 
-# Train-Test Split
-val_size = int(len(df) * 0.2)
-train, val = df[:-val_size], df[-val_size:]
+# Train-validation-test split
+train_idx = int(len(series) * 0.8)
+val_idx = int(len(series) * 0.9)
+train, val, test = series[:train_idx], series[train_idx:val_idx], series[val_idx:]
 
-# Train LSTM Model
-hidden_neurons = 12
-input_size = 8
-best_model = LSTM(h=hidden_neurons, input_size=input_size, loss=MAE(), alias="LSTM_12")
+# Define parameter ranges for SARIMA tuning
+p_values, d_values, q_values = range(0, 6), range(0, 3), range(0, 6)
+P_values, D_values, Q_values = range(0, 3), range(0, 2), range(0, 3)
+S = 12  # Quarterly seasonality
 
-nf_best = NeuralForecast(models=[best_model], freq="Q")
-nf_best.fit(df=train)
+best_score, best_cfg = float("inf"), None
 
-# Forecast Function
-def forecast_turnover(horizon):
-    horizon = int(horizon)
-    forecast_df = nf_best.predict().reset_index()
+# Grid search over SARIMA parameter combinations
+for p, d, q, P, D, Q in itertools.product(p_values, d_values, q_values, P_values, D_values, Q_values):
+    try:
+        model = SARIMAX(train, order=(p, d, q), seasonal_order=(P, D, Q, S), enforce_stationarity=False, enforce_invertibility=False)
+        model_fit = model.fit(disp=False)
+        predictions = model_fit.forecast(steps=len(val))
+        error = mean_absolute_error(val, predictions)
+        if error < best_score:
+            best_score, best_cfg = error, (p, d, q, P, D, Q)
+    except:
+        continue
 
-    if forecast_df.empty:
-        return None, "🚨 No forecast data available!"
+# Train best SARIMA model
+best_p, best_d, best_q, best_P, best_D, best_Q = best_cfg
+final_model = SARIMAX(pd.concat([train, val]), order=(best_p, best_d, best_q), seasonal_order=(best_P, best_D, best_Q, S), enforce_stationarity=False, enforce_invertibility=False, initialization="approximate_diffuse")
+final_model_fit = final_model.fit(disp=False)
 
-    pred_col = "LSTM_12"
-    predictions = forecast_df[pred_col][:horizon].values
+# Train on full dataset for next year prediction
+full_model = SARIMAX(series, order=(best_p, best_d, best_q), seasonal_order=(best_P, best_D, best_Q, S), enforce_stationarity=False, enforce_invertibility=False, initialization="approximate_diffuse")
+full_model_fit = full_model.fit(disp=False)
 
-    last_date = train["ds"].max()
-    future_dates = pd.date_range(start=last_date, periods=horizon, freq="QE-DEC")
+def forecast_turnover(horizon, confidence_level):
+    try:
+        horizon = int(horizon)
+        alpha_value = 1 - (confidence_level / 100)  # Convert % to alpha
+        predictions_result = final_model_fit.get_forecast(steps=horizon)
+        final_predictions = predictions_result.predicted_mean
+        conf_int = predictions_result.conf_int(alpha=alpha_value)
 
-    # 📊 Create Plot
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=train["ds"], y=train["y"], mode="lines", name="Training Data"))
-    fig.add_trace(go.Scatter(x=val["ds"], y=val["y"], mode="lines", name="Actual Revenue"))
-    fig.add_trace(go.Scatter(x=future_dates, y=predictions, mode="lines+markers", name="Forecast"))
+        last_date = test.index.min()
+        future_dates = pd.date_range(start=last_date, periods=horizon, freq="Q")
 
-    fig.update_layout(title="Turnover Forecast (Merck KGaA)", xaxis_title="Date", yaxis_title="Revenue (€)", template="plotly_white")
+        # Create interactive Plotly plot
+        fig1 = go.Figure()
+        fig1.add_trace(go.Scatter(x=train.index, y=train, mode='lines', name='Training Data', line=dict(color='blue')))
+        fig1.add_trace(go.Scatter(x=val.index, y=val, mode='lines', name='Validation Data', line=dict(color='orange')))
+        fig1.add_trace(go.Scatter(x=test.index, y=test, mode='lines+markers', name='Test Data', line=dict(color='green')))
+        fig1.add_trace(go.Scatter(x=future_dates, y=final_predictions, mode='lines+markers', name=f'Forecast ({confidence_level}%)', line=dict(color='red', dash='dash')))
 
-    return fig, f"✅ Forecast for {horizon} quarters."
+        # Confidence interval fill
+        fig1.add_trace(go.Scatter(
+            x=future_dates.tolist() + future_dates[::-1].tolist(),
+            y=conf_int.iloc[:, 0].tolist() + conf_int.iloc[:, 1].tolist()[::-1],
+            fill='toself',
+            fillcolor='rgba(255, 0, 0, 0.2)',
+            line=dict(color='rgba(255,255,255,0)'),
+            showlegend=True,
+            name=f'Confidence Interval ({confidence_level}%)'
+        ))
 
-# Gradio Interface
+        fig1.update_layout(title=f"SARIMA Forecast for {company} Revenue", xaxis_title="Year", yaxis_title="Revenue", hovermode='x')
+
+        # Predict next year using full model
+        next_year_result = full_model_fit.get_forecast(steps=4)
+        next_year_predictions = next_year_result.predicted_mean
+        next_year_conf_int = next_year_result.conf_int(alpha=alpha_value)
+        next_year_dates = pd.date_range(start=series.index.max(), periods=4, freq="Q")
+
+        fig2 = go.Figure()
+        fig2.add_trace(go.Scatter(x=series.index, y=series, mode='lines', name='Full Data', line=dict(color='blue')))
+        fig2.add_trace(go.Scatter(x=next_year_dates, y=next_year_predictions, mode='lines+markers', name='Next Year Forecast', line=dict(color='red', dash='dash')))
+        fig2.add_trace(go.Scatter(
+            x=next_year_dates.tolist() + next_year_dates[::-1].tolist(),
+            y=next_year_conf_int.iloc[:, 0].tolist() + next_year_conf_int.iloc[:, 1].tolist()[::-1],
+            fill='toself',
+            fillcolor='rgba(255, 0, 0, 0.2)',
+            line=dict(color='rgba(255,255,255,0)'),
+            showlegend=True,
+            name=f'Confidence Interval ({confidence_level}%)'
+        ))
+
+        fig2.update_layout(title=f"SARIMA Forecast for {company} Revenue for 2025", xaxis_title="Year", yaxis_title="Revenue", hovermode='x')
+
+        return fig1, fig2
+    except Exception as e:
+        return None, f"❌ Error: {str(e)}"
+
+
+# Launch Gradio Interface
 iface = gr.Interface(
     fn=forecast_turnover,
-    inputs=gr.Slider(minimum=1, maximum=6, step=1, label="Forecast Horizon (Quarters)"),
-    outputs=[gr.Plot(), gr.Textbox()],
-    title="Merck KGaA Turnover Forecast",
-    description="Select the forecast horizon (in quarters) to generate turnover predictions.",
+    inputs=[
+        gr.Slider(minimum=1, maximum=6, step=1, label="Forecast Horizon (Quarters)"),
+        gr.Slider(minimum=50, maximum=99, step=1, label="Confidence Level (%)")
+    ],
+    outputs=[gr.Plot(), gr.Plot()],
+    title=f"{company} Revenue Forecast",
+    description="Select the forecast horizon (in quarters) and confidence level for revenue predictions.",
 )
 
-iface.launch()
+iface.launch(debug=True)

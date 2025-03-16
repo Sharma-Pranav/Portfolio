@@ -1,36 +1,35 @@
-# 📌 AI-Powered Turnover Forecasting for Merck KGaA 💰📊
+# 📌 AI-Powered Turnover Forecasting for SAP SE 💰📊
 
 ## **🚀 Project Overview**
-This project focuses on **AI-driven revenue forecasting** for **Merck KGaA**, leveraging **LSTM models with Walk-Forward Validation** to enhance turnover predictions. The goal is to **improve financial planning, optimize business strategies, and support data-driven decision-making**.
+This project focuses on **AI-driven revenue forecasting** for **SAP SE**, leveraging **SARIMA models** to enhance turnover predictions. The goal is to **improve financial planning, optimize business strategies, and support data-driven decision-making**.
 
 ---
 
-## **📌 Why Merck KGaA?**
-### **1️⃣ Leading Pharmaceutical & Chemical Manufacturer**
-- Merck KGaA is a **global leader in pharmaceuticals, life sciences, and specialty chemicals**.
+## **📌 Why SAP SE?**
+### **1️⃣ Leading Enterprise Software Company**
+- SAP SE is a **global leader in enterprise application software and cloud solutions**.
 - AI-driven forecasting can **improve financial strategy, supply chain management, and R&D investments**.
 
 ### **2️⃣ Revenue Forecasting for Strategic Growth**
 - **Accurate turnover forecasting** supports better budgeting, operational efficiency, and risk management.
-- **Business intelligence for pharma & chemical demand fluctuations**.
+- **Business intelligence for enterprise software demand fluctuations**.
 
 ### **3️⃣ AI Adoption in the Industry**
-- The pharma and life sciences sector is **increasingly leveraging AI for predictive analytics**.
-- **LSTM models with Walk-Forward Validation** provide a robust forecasting approach.
+- The enterprise software sector is **increasingly leveraging AI for predictive analytics**.
+- **SARIMA models** provide a robust forecasting approach.
 
 ---
 
 ## **📌 AI Model & Technical Approach**
-✅ **LSTM-based Time-Series Forecasting**  
-✅ **Walk-Forward Validation for Robustness**  
+✅ **SARIMA-based Time-Series Forecasting**  
 ✅ **Gradio-based Deployment on Hugging Face Spaces**  
 
-The project utilizes **NeuralForecast’s LSTM model**, trained on **historical revenue data from Merck KGaA**, with an **interactive Gradio UI for real-time predictions**.
+The project utilizes **SARIMA model**, trained on **historical revenue data from SAP SE**, with an **interactive Gradio UI for real-time predictions**.
 
 ---
 
 ## **📌 Dataset Selection**
-The dataset is sourced from **Top 12 German Companies Financial Data**, focusing on **Merck KGaA's historical revenue trends**.
+The dataset is sourced from **Top 12 German Companies Financial Data**, focusing on **SAP SE's historical revenue trends**.
 
 - **Source**: [Top 12 German Companies Financial Data (Kaggle)](https://www.kaggle.com/datasets)
 - **Description**: Multivariate time-series data capturing financial performance over multiple years.
@@ -41,14 +40,13 @@ The dataset is sourced from **Top 12 German Companies Financial Data**, focusing
 - **Revenue trend analysis & forecasting**.
 - **Exploratory Data Analysis (EDA) for financial insights**.
 - **Interactive Gradio app for real-time revenue predictions**.
-- **Walk-Forward Validation for improved forecasting accuracy**.
 
 ---
 
 ## **📌 Tools & Libraries**
 - **Python**
 - **Pandas, NumPy**
-- **NeuralForecast (LSTM)**
+- **Statsmodels (SARIMA)**
 - **Gradio**
 - **Plotly** for visualization
 

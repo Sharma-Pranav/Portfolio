@@ -32,8 +32,12 @@ jobs:
       - name: 📦 Install requirements
         working-directory: ${{ matrix.project }}
         run: |
-          echo "Installing dependencies from ${{ matrix.project }}/requirements.txt"
-          pip install -r requirements.txt || echo "⚠️ No requirements.txt found."
+          echo "📦 Installing dependencies from ${{ matrix.project }}/requirements.txt"
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "⚠️ No requirements.txt found. Skipping..."
+          fi
           pip install huggingface_hub
 
       - name: 🚀 Push to Hugging Face Space
@@ -41,8 +45,8 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
-          huggingface-cli login --token "$HF_TOKEN"
-          git init
+          echo "$HF_TOKEN" | huggingface-cli login --token
+          git init -b main
           git remote add hf https://huggingface.co/spaces/PranavSharma/${{ matrix.space }}
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"

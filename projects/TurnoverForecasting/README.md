@@ -8,74 +8,69 @@ sdk_version: 5.22.0
 app_file: app.py
 pinned: false
 license: mit
-short_description: TurnoverForecasting  - SAP SE
+short_description: Forecasting SAP SE Revenue with AI
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
-# 📌 AI-Powered Turnover Forecasting for SAP SE 💰📊
+# 📊 AI-Powered Turnover Forecasting for SAP SE
 
-## **🚀 Project Overview**
-This project focuses on **AI-driven revenue forecasting** for **SAP SE**, leveraging **SARIMA models** to enhance turnover predictions. The goal is to **improve financial planning, optimize business strategies, and support data-driven decision-making**.
+## 🚀 Project Overview
 
----
-
-## **📌 Why SAP SE?**
-### **1️⃣ Leading Enterprise Software Company**
-- SAP SE is a **global leader in enterprise application software and cloud solutions**.
-- AI-driven forecasting can **improve financial strategy, supply chain management, and R&D investments**.
-
-### **2️⃣ Revenue Forecasting for Strategic Growth**
-- **Accurate turnover forecasting** supports better budgeting, operational efficiency, and risk management.
-- **Business intelligence for enterprise software demand fluctuations**.
-
-### **3️⃣ AI Adoption in the Industry**
-- The enterprise software sector is **increasingly leveraging AI for predictive analytics**.
-- **SARIMA models** provide a robust forecasting approach.
+This project delivers **AI-driven revenue forecasting** for **SAP SE** using a **univariate SARIMA model**. The focus is to demonstrate how reliable forecasts can be achieved with **minimal data** — only historical turnover — making this approach powerful for both large enterprises and **resource-constrained settings**.
 
 ---
 
-## **📌 AI Model & Technical Approach**
-✅ **SARIMA-based Time-Series Forecasting**  
-✅ **Gradio-based Deployment on Hugging Face Spaces**  
+## 📌 Why Univariate Forecasting?
 
-The project utilizes **SARIMA model**, trained on **historical revenue data from SAP SE**, with an **interactive Gradio UI for real-time predictions**.
-
----
-
-## **📌 Dataset Selection**
-The dataset is sourced from **Top 12 German Companies Financial Data**, focusing on **SAP SE's historical revenue trends**.
-
-- **Source**: [Top 12 German Companies Financial Data (Kaggle)](https://www.kaggle.com/datasets)
-- **Description**: Multivariate time-series data capturing financial performance over multiple years.
+- 🔎 **Focus on one key variable — Revenue**
+- ✅ Ideal when limited data is available  
+- 🧠 Easier to interpret and communicate results  
+- 🚀 Fast to train, test, and deploy  
+- 💡 Great for early-stage AI adoption and small business analytics  
 
 ---
 
-## **📌 Features**
-- **Revenue trend analysis & forecasting**.
-- **Exploratory Data Analysis (EDA) for financial insights**.
-- **Interactive Gradio app for real-time revenue predictions**.
+## 🏢 Why SAP SE?
+
+- SAP SE is a **global leader in enterprise software**  
+- Accurate revenue forecasts support **strategic planning, risk management, and growth**  
+- As a digital-first company, SAP is ideal for showcasing **AI integration in financial operations**
 
 ---
 
-## **📌 Tools & Libraries**
-- **Python**
-- **Pandas, NumPy**
-- **Statsmodels (SARIMA)**
-- **Gradio**
-- **Plotly** for visualization
+## 🛠️ Technical Approach
+
+- **SARIMA** model (Seasonal ARIMA) for time-series forecasting  
+- Forecast horizon: **1 to 6 quarters**  
+- Built-in **walk-forward validation**  
+- **Gradio UI** for interactive forecasting  
+- Visuals powered by **Plotly**
 
 ---
 
-## **📌 How to Run**
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/Sharma-Pranav/Portfolio.git
-2. Navigate to the project directory:  
-   `cd TurnoverForecasting`  
-3. Install dependencies:  
-   `pip install -r requirements.txt`  
-4. Run the application:  
-   `python app.py`  
+## 📊 Dataset
+
+- Source: **Top 12 German Companies Financial Data (Kaggle)**  
+- Focused subset: **SAP SE revenue over time**  
+- Realistic industry dataset for enterprise-level modeling
+
+---
+
+## 🎯 Features
+
+- Predict revenue trends with confidence intervals  
+- Dynamic forecasting by adjusting horizon and confidence level  
+- Interactive and mobile-friendly layout (single-column Gradio)  
+- Insightful visual comparisons: Training, Validation, Test & Future Forecasts
+
+---
+
+## ⚙️ How to Run
+
+```bash
+git clone https://github.com/Sharma-Pranav/Portfolio.git
+cd projects/TurnoverForecasting
+pip install -r requirements.txt
+python app.py
 
 ---
 
@@ -83,7 +78,7 @@ The dataset is sourced from **Top 12 German Companies Financial Data**, focusing
 - **Accurate Accurate revenue forecasting for Merck KGaA for better financial planning. **  
 - **Optimized financial planning & business strategy insights.**  
 - **Walk-Forward Validation ensures model reliability over time.**.  
-
+```
 
 ---
 

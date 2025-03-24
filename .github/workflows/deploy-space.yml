@@ -12,27 +12,37 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - project: projects/DynamicPricingOptimization
+            space: RidePricingInsightEngine
+          - project: projects/TurnoverForecasting
+            space: TurnoverForecasting
+
     steps:
-      # Step 1: Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.3'
 
-      # Step 3: Install dependencies
       - name: Install dependencies
+        working-directory: ${{ matrix.project }}
         run: |
           pip install -r requirements.txt
           pip install huggingface_hub
 
-      # Step 4: Authenticate and push to Hugging Face
       - name: Push to Hugging Face
+        working-directory: ${{ matrix.project }}
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           huggingface-cli login --token $HF_TOKEN
-          git push hf main
+          git init
+          git remote add hf https://huggingface.co/spaces/PranavSharma/${{ matrix.space }}
+          git add .
+          git commit -m "Deploying ${{ matrix.space }}"
+          git push hf main --force

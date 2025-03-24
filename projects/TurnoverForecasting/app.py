@@ -114,16 +114,36 @@ def forecast_turnover(horizon, confidence_level):
         return None, f"❌ Error: {str(e)}"
 
 
-# Launch Gradio Interface
-iface = gr.Interface(
-    fn=forecast_turnover,
-    inputs=[
-        gr.Slider(minimum=1, maximum=6, step=1, label="Forecast Horizon (Quarters)"),
-        gr.Slider(minimum=50, maximum=99, step=1, label="Confidence Level (%)")
-    ],
-    outputs=[gr.Plot(), gr.Plot()],
-    title=f"{company} Revenue Forecast",
-    description="Select the forecast horizon (in quarters) and confidence level for revenue predictions.",
-)
+# # Launch Gradio Interface
+# iface = gr.Interface(
+#     fn=forecast_turnover,
+#     inputs=[
+#         gr.Slider(minimum=1, maximum=6, step=1, label="Forecast Horizon (Quarters)"),
+#         gr.Slider(minimum=50, maximum=99, step=1, label="Confidence Level (%)")
+#     ],
+#     outputs=[gr.Plot(), gr.Plot()],
+#     title=f"{company} Revenue Forecast",
+#     description="Select the forecast horizon (in quarters) and confidence level for revenue predictions.",
+# )
 
-iface.launch(debug=True)
+# iface.launch(debug=True)
+
+
+with gr.Blocks() as demo:
+    gr.Markdown(f"# {company} Revenue Forecast")
+    gr.Markdown("📈 Select the forecast horizon (in quarters) and confidence level for revenue predictions.")
+
+    with gr.Column():
+        horizon = gr.Slider(minimum=1, maximum=6, step=1, label="Forecast Horizon (Quarters)")
+        confidence = gr.Slider(minimum=50, maximum=99, step=1, label="Confidence Level (%)")
+        submit = gr.Button("📊 Forecast")
+
+        plot1 = gr.Plot(label="Validation & Forecast")
+        plot2 = gr.Plot(label="Full Data & 2025 Forecast")
+
+        def wrapped_forecast(h, c):
+            return forecast_turnover(h, c)
+
+        submit.click(fn=wrapped_forecast, inputs=[horizon, confidence], outputs=[plot1, plot2])
+
+demo.launch(debug=True)

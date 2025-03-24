@@ -1,3 +1,17 @@
+---
+title: TurnoverForecasting
+emoji: 📊
+colorFrom: blue
+colorTo: red
+sdk: gradio
+sdk_version: 5.22.0
+app_file: app.py
+pinned: false
+license: mit
+short_description: TurnoverForecasting  - SAP SE
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 # 📌 AI-Powered Turnover Forecasting for SAP SE 💰📊
 
 ## **🚀 Project Overview**

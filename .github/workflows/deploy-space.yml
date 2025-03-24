@@ -21,25 +21,22 @@ jobs:
             space: TurnoverForecasting
 
     steps:
-      # Step 1: Checkout the repository code
-      - name: Checkout code
+      - name: ✅ Checkout repo
         uses: actions/checkout@v3
 
-      # Step 2: Set up Python
-      - name: Set up Python
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12.3'
+          python-version: '3.12'
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
+      - name: 📦 Install requirements
         working-directory: ${{ matrix.project }}
         run: |
+          echo "Installing dependencies from ${{ matrix.project }}/requirements.txt"
           pip install -r requirements.txt
           pip install huggingface_hub
 
-      # Step 4: Deploy to Hugging Face
-      - name: Push to Hugging Face Space
+      - name: 🚀 Push to Hugging Face Space
         working-directory: ${{ matrix.project }}
         env:
           HF_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
@@ -47,6 +44,8 @@ jobs:
           echo "$HF_TOKEN" | huggingface-cli login --stdin
           git init
           git remote add hf https://huggingface.co/spaces/PranavSharma/${{ matrix.space }}
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
           git add .
-          git commit -m "Deploying ${{ matrix.space }}"
+          git commit -m "🚀 Deploying to Hugging Face Space: ${{ matrix.space }}" || echo "Nothing to commit"
           git push hf main --force

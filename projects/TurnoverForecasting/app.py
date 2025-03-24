@@ -128,7 +128,6 @@ def forecast_turnover(horizon, confidence_level):
 
 # iface.launch(debug=True)
 
-
 with gr.Blocks() as demo:
     gr.Markdown(f"# {company} Revenue Forecast")
     gr.Markdown("📈 Select the forecast horizon (in quarters) and confidence level for revenue predictions.")

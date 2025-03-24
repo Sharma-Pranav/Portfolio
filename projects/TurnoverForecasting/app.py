@@ -113,6 +113,7 @@ def forecast_turnover(horizon, confidence_level):
     except Exception as e:
         return None, f"❌ Error: {str(e)}"
 
+
 # # Launch Gradio Interface
 # iface = gr.Interface(
 #     fn=forecast_turnover,

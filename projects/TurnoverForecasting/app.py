@@ -113,7 +113,6 @@ def forecast_turnover(horizon, confidence_level):
     except Exception as e:
         return None, f"❌ Error: {str(e)}"
 
-
 # # Launch Gradio Interface
 # iface = gr.Interface(
 #     fn=forecast_turnover,
@@ -127,7 +126,6 @@ def forecast_turnover(horizon, confidence_level):
 # )
 
 # iface.launch(debug=True)
-
 
 with gr.Blocks() as demo:
     gr.Markdown(f"# {company} Revenue Forecast")

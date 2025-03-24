@@ -28,7 +28,7 @@ from joblib import dump
 import pickle
 import pandas as pd
 
-
+# print(os.getcwd())
 # Initialize repository
 User = "PranavSharma"
 repo_name = "dynamic-pricing-model"

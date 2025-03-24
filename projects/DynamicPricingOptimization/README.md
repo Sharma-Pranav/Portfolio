@@ -8,33 +8,51 @@ sdk_version: "5.22.0"
 app_file: app.py
 pinned: false
 license: mit
-short_description: ML-powered ride pricing optimization for retail & e-commerce
+short_description: ML-powered ride fare prediction using regression
 ---
 
-# Dynamic Pricing Optimization
+# Dynamic Ride Pricing Optimization
 
 ## 🚀 Overview
 
-This project focuses on creating a **scalable solution for dynamic pricing optimization** in retail and e-commerce. By leveraging machine learning models, it helps businesses **maximize revenue** and **enhance competitiveness** through **real-time price adjustments**.
+This project presents a machine learning-based solution for **ride fare prediction and optimization**, using a rich synthetic dataset of historical ride data. By analyzing real-time supply-demand conditions and customer attributes, the system aims to help ride-sharing platforms implement **data-driven dynamic pricing strategies**.
 
 ## 📊 Dataset
 
-- **Source**: [Dynamic Pricing Dataset (Kaggle)](https://www.kaggle.com/datasets/arashnic/dynamic-pricing-dataset)  
-- **Description**: Historical sales, pricing, and demand data for training and testing pricing models.
+- **Source**: [Dynamic Pricing Dataset (Kaggle)](https://www.kaggle.com/datasets/arashnic/dynamic-pricing-dataset)
+- **Description**: A **synthetic dataset** designed for ride-sharing fare prediction. Features include:
+  - Number of Riders / Drivers
+  - Location Category
+  - Loyalty Status
+  - Number of Past Rides
+  - Ratings
+  - Booking Time
+  - Vehicle Type
+  - Expected Ride Duration
+  - Historical Cost of Ride
 
-## 🔍 Features
+## 🔍 Problem Statement
 
-- Preprocessing pipeline for structured retail data.
-- Machine learning models for **price elasticity analysis**.
-- Real-time pricing recommendation engine **deployed on Hugging Face Spaces**.
+The objective is to identify which features most influence ride fares and approximate pricing behavior through various **regression models**. This includes:
+- Finding key predictors for optimal fare setting.
+- Estimating price sensitivity across rider and supply characteristics.
+- Offering recommendations for **dynamic fare adjustments** in real time.
+
+## 🧠 Model & Features
+
+- **Regression-based modeling** (e.g., Linear, Ridge, XGBoost)
+- **Final model**: Huber Regressor with non-zero intercept — robust to outliers, encouraging sparse feature usage
+- **Feature selection pipeline** to reduce unnecessary variables
+- **Price approximation engine** that generalizes across different booking conditions
+- **Gradio-powered UI** for hands-on exploration
 
 ## 🛠️ Tools and Libraries
 
 - **Python**
 - **Scikit-learn**, **XGBoost**
 - **Pandas**, **NumPy**
-- **FastAPI** or **Flask**
-- **Hugging Face Hub + Gradio**
+- **Gradio** for app deployment
+- **Plotly** for interactive visualization
 
 ## 🧪 How to Run Locally
 
@@ -47,10 +65,11 @@ python app.py
 
 ## 📈 Results
 
-- Optimized product pricing based on historical data.
-- Clear insights into **price elasticity and sales performance**.
-- Interactive dashboard with pricing recommendations and model predictions.
+- Clear insights into **fare-driving features** like rider demand, loyalty, and time of day.
+- **Huber Regressor** outperformed others due to robustness and minimal feature reliance.
+- **Optimal pricing zones** visualized for strategic recommendations.
+- Portable deployment for teams to simulate and iterate pricing strategies.
 
 ---
 
-> ✨ Developed by **Pranav Sharma** | 🚀 Hugging Face Space: `RidePricingInsightEngine`
+> ✨ Developed by **Pranav Sharma** | 🚀 Hugging Face Space: [`RidePricingInsightEngine`](https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine)

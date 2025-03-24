@@ -46,7 +46,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
         run: |
           git init -b main
-          git remote add hf https://$HF_TOKEN@huggingface.co/spaces/PranavSharma/${{ matrix.space }}
+          git remote add hf https://hf_user:$HF_TOKEN@huggingface.co/spaces/PranavSharma/${{ matrix.space }}
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
           git add .

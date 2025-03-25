@@ -14,11 +14,19 @@ from tempfile import mkdtemp
 from pathlib import Path
 import pickle
 import shutil
+
+from huggingface_hub import HfApi
+import os
 import warnings
 warnings.filterwarnings("ignore")
 
 # Set random seed
 np.random.seed(42)
+
+# Get token from environment variable
+token = os.getenv("HF_TOKEN")
+hf_api = HfApi()
+hf_api.set_access_token(token)
 
 # Load the dataset
 df = pd.read_csv("data/Top_12_German_Companies_Financial_Data.csv")
@@ -220,6 +228,7 @@ hub_utils.push(
     source=hf_repo_path,
     commit_message="📈 Pushed SARIMA model and card for SAP SE",
     create_remote=True,
+    token=token  # Pass the token for authentication
 )
 
 

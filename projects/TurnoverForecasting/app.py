@@ -26,7 +26,7 @@ np.random.seed(42)
 # Get token from environment variable
 token = os.getenv("HF_TOKEN")
 hf_api = HfApi()
-hf_api.set_access_token(token)
+hf_api.login(token)
 
 # Load the dataset
 df = pd.read_csv("data/Top_12_German_Companies_Financial_Data.csv")

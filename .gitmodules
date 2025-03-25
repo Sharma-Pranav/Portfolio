@@ -2,9 +2,6 @@
     path = PortfolioWebsite/themes/academic-cv
     url = https://github.com/HugoBlox/theme-academic-cv
 
-[submodule "projects/DynamicPricingOptimization/RidePricingInsightEngine"]
-    path = projects/DynamicPricingOptimization/RidePricingInsightEngine
-    url = https://huggingface.co/spaces/PranavSharma/RidePricingInsightEngine
 [submodule "Website/themes/HugoPlate"]
 	path = Website/themes/HugoPlate
 	url = https://github.com/zeon-studio/HugoPlate

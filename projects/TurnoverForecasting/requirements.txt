@@ -1,4 +1,5 @@
 gradio
+skops
 pandas
 numpy
 scikit-learn

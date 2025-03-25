@@ -6,16 +6,10 @@ import plotly.graph_objects as go
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_absolute_error
 import gradio as gr
-from huggingface_hub import HfApi
 from skops import hub_utils
-# from skops.card import CardData, Card
-from collections import OrderedDict
 from tempfile import mkdtemp
 from pathlib import Path
 import pickle
-import shutil
-
-from huggingface_hub import HfApi
 import os
 import warnings
 warnings.filterwarnings("ignore")
@@ -68,7 +62,6 @@ for p, d, q, P, D, Q in  tqdm(itertools.product(p_values, d_values, q_values, P_
 best_p, best_d, best_q, best_P, best_D, best_Q = best_cfg
 final_model = SARIMAX(pd.concat([train, val]), order=(best_p, best_d, best_q), seasonal_order=(best_P, best_D, best_Q, S), enforce_stationarity=False, enforce_invertibility=False, initialization="approximate_diffuse")
 final_model_fit = final_model.fit(disp=False)
-
 
 
 # Train on full dataset for next year prediction

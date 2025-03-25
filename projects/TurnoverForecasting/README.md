@@ -75,7 +75,7 @@ python app.py
 ---
 
 ## **📌 Results**  
-- **Accurate Accurate revenue forecasting for Merck KGaA for better financial planning. **  
+- **Accurate Accurate revenue forecasting for SAP SE for better financial planning. **  
 - **Optimized financial planning & business strategy insights.**  
 - **Walk-Forward Validation ensures model reliability over time.**.  
 ```

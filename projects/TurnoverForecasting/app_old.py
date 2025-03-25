@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 import itertools
 import plotly.graph_objects as go
 from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -8,16 +7,14 @@ from sklearn.metrics import mean_absolute_error
 import gradio as gr
 from huggingface_hub import HfApi
 from skops import hub_utils
-# from skops.card import CardData, Card
-from collections import OrderedDict
+from skops.card import Card, ModelIndex, DatasetCardData
 from tempfile import mkdtemp
 from pathlib import Path
 import pickle
-import shutil
+import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
-
-# Set random seed
+# Set random seed for reproducibility
 np.random.seed(42)
 
 # Load the dataset
@@ -47,7 +44,7 @@ S = 12  # Quarterly seasonality
 best_score, best_cfg = float("inf"), None
 
 # Grid search over SARIMA parameter combinations
-for p, d, q, P, D, Q in  tqdm(itertools.product(p_values, d_values, q_values, P_values, D_values, Q_values)):
+for p, d, q, P, D, Q in itertools.product(p_values, d_values, q_values, P_values, D_values, Q_values):
     try:
         model = SARIMAX(train, order=(p, d, q), seasonal_order=(P, D, Q, S), enforce_stationarity=False, enforce_invertibility=False)
         model_fit = model.fit(disp=False)
@@ -128,99 +125,19 @@ def forecast_turnover(horizon, confidence_level):
         return None, f"❌ Error: {str(e)}"
 
 
-# Save model to a temporary path
-model_path = "sarima_sap_model.pkl"
-with open(model_path, "wb") as f:
-    pickle.dump(full_model_fit, f)
+# # Launch Gradio Interface
+# iface = gr.Interface(
+#     fn=forecast_turnover,
+#     inputs=[
+#         gr.Slider(minimum=1, maximum=6, step=1, label="Forecast Horizon (Quarters)"),
+#         gr.Slider(minimum=50, maximum=99, step=1, label="Confidence Level (%)")
+#     ],
+#     outputs=[gr.Plot(), gr.Plot()],
+#     title=f"{company} Revenue Forecast",
+#     description="Select the forecast horizon (in quarters) and confidence level for revenue predictions.",
+# )
 
-# Hugging Face push (moved up to run before Gradio launch)
-base_temp_dir = Path(mkdtemp(prefix="sarima-sap-hf-"))
-hf_repo_path = base_temp_dir / "hf_repo"
-hf_repo_path.mkdir(parents=True, exist_ok=True)
-
-data = df.reset_index()
-data["Period"] = data["Period"].astype(str)
-
-hub_utils.init(
-    model=Path(model_path),
-    requirements=["pandas", "statsmodels", "scikit-learn"],
-    dst=hf_repo_path,
-    task="tabular-regression",
-    data=data
-)
-
-readme_path = hf_repo_path / "README.md"
-readme_content = f"""---
-title: TurnoverForecasting
-emoji: 📊
-colorFrom: blue
-colorTo: red
-sdk: gradio
-sdk_version: 5.22.0
-app_file: app.py
-pinned: false
-license: mit
-short_description: Forecasting SAP SE Revenue with AI
----
-
-# 📊 AI-Powered Turnover Forecasting for SAP SE
-
-## 🚀 Project Overview
-
-This project delivers **AI-driven revenue forecasting** for **SAP SE** using a **univariate SARIMA model**.
-It shows how accurate forecasts can be built from limited data (just historical turnover).
-
----
-
-## 🏢 Why SAP SE?
-
-- SAP SE is a **global leader in enterprise software**
-- Revenue forecasts support **strategic planning & growth**
-- Perfect case for **AI-powered financial forecasting**
-
----
-
-## 🧠 Model Details
-
-- **Model type**: SARIMA (Seasonal ARIMA)
-- **Trained on**: SAP SE revenue from Top 12 German Companies Dataset (Kaggle)
-- **SARIMA Order**: ({best_p}, {best_d}, {best_q})
-- **Seasonal Order**: ({best_P}, {best_D}, {best_Q}, {S})
-- **Evaluation Metric**: MAE (Mean Absolute Error)
-- **Validation**: Walk-forward validation with test set (last 10%)
-
----
-
-## ⚙️ How to Use
-
-```python
-import pickle
-
-with open("sarima_sap_model.pkl", "rb") as f:
-    model = pickle.load(f)
-
-forecast = model.forecast(steps=4)
-print(forecast)
-```
-
-## 📌 Intended Use & Limitations
-👍 Forecast SAP SE revenue for next 1–6 quarters  
-📈 Great for univariate, seasonal time series  
-🚫 Not suitable for multivariate or non-seasonal data  
-⚠️ Requires careful preprocessing (e.g., stationarity)
-
-👨‍💻 Author: Pranav Sharma
-"""
-
-with open(readme_path, "w") as f:
-    f.write(readme_content)
-
-hub_utils.push(
-    repo_id="PranavSharma/turnover-forecasting-model",
-    source=hf_repo_path,
-    commit_message="📈 Pushed SARIMA model and card for SAP SE",
-    create_remote=True,
-)
+# iface.launch(debug=True)
 
 
 with gr.Blocks() as demo:

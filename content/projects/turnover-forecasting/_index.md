@@ -1,10 +1,9 @@
 ---
-title: "TurnoverForecasting"
-date: 2025-01-31
+title: "Turnover Forecasting"
+date: 2025-02-28
 type: "projects"
 layout: "single"
-summary: "Predictive Maintenance System
-"
+summary: "AI-powered quarterly revenue forecasting for SAP SE using SARIMA"
 menu:
   main:
     parent: "projects"
@@ -16,34 +15,33 @@ _build:
 
 ## Overview
 
-This project aims to predict equipment failures and estimate the remaining useful life (RUL) of components in manufacturing systems. By leveraging sensor data, it provides early warnings for maintenance scheduling.
+This project delivers **AI-driven revenue forecasting** for **SAP SE** using a **univariate SARIMA model**. It demonstrates how accurate forecasts can be built from limited data (just historical turnover), providing actionable insights for strategic planning and growth.
 
 ## Dataset
 
-- **Source**: NASA Turbofan Engine Degradation Dataset
-- **Description**: Multivariate time series data capturing engine degradation metrics.
+- **Source**: Top 12 German Companies Financial Data (Kaggle)
+- **Description**: Historical revenue data for SAP SE.
 
 ## Features
 
-- Exploratory Data Analysis (EDA) to identify critical sensors.
-- Regression models for RUL prediction.
-- Deployment of an API or dashboard for real-time predictions.
+- Time series forecasting with the **SARIMA** model.
+- Forecasts revenue for the next **1-6 quarters**.
+- Interactive **Gradio** interface for model interaction.
 
 ## Tools and Libraries
 
-- Python
-- Pandas, NumPy
-- Scikit-learn
-- XGBoost
-- FastAPI / Flask
-- Plotly
+- **Python**
+- **Pandas, NumPy**
+- **Statsmodels** (SARIMA)
+- **Gradio** (for the UI)
+- **Plotly** (for interactive visualizations)
 
 ## How to Run
 
 1. Clone the repository:  
    `git clone https://github.com/Sharma-Pranav/Portfolio.git`
 2. Navigate to the project directory:  
-   `cd PredictiveMaintenanceSystem`
+   `cd projects/TurnoverForecasting`
 3. Install dependencies:  
    `pip install -r requirements.txt`
 4. Run the application:  
@@ -51,7 +49,15 @@ This project aims to predict equipment failures and estimate the remaining usefu
 
 ## Results
 
-- Accurate predictions of RUL for different operational settings.
-- Identification of key sensors influencing the prediction.
+- Accurate **quarterly revenue forecasting** for SAP SE.
+- Insights on **future revenue trends** and confidence intervals.
 
 ---
+
+📌 **Intended Use & Limitations**
+- ✅ Forecast SAP SE revenue for next 1–6 quarters
+- 📈 Great for univariate, seasonal time series
+- 🚫 Not suitable for multivariate or non-seasonal data
+- ⚠️ Requires careful preprocessing (e.g., stationarity)
+
+👨‍💻 **Author**: Pranav Sharma

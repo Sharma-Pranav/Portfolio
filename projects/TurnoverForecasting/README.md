@@ -82,6 +82,27 @@ python app.py
 
 ---
 
+## 🌐 Try It Live on Hugging Face
+
+Experience the project **without installing anything**!
+
+🚀 Just head to the hosted interactive demo:
+
+👉 **[Launch the Forecasting App](https://huggingface.co/spaces/PranavSharma/TurnoverForecasting)**
+
+[![Hugging Face Space](https://img.shields.io/badge/🤗%20View%20on%20Hugging%20Face-blue?logo=huggingface)](https://huggingface.co/spaces/PranavSharma/TurnoverForecasting)
+
+---
+
+### 🔍 What You Can Do:
+
+- 📅 **Select Forecast Horizon** – Choose how many future quarters (1–6) to predict  
+- 🎯 **Adjust Confidence Level** – See uncertainty intervals dynamically  
+- 📈 **Visualize Forecasts** – Instantly view training vs. validation vs. future forecasts  
+- 📲 **Use on Any Device** – Mobile-optimized for fast access anywhere  
+
+---
+
 📌 **Developed by:** Pranav Sharma
 📆 **Project Start Date:** February 2025  
 📁 **Repository:** https://github.com/Sharma-Pranav/Portfolio/

@@ -21,7 +21,7 @@ This project builds an **AI-powered turnover forecasting system** for **SAP SE**
 ---
 
 ## 📂 Dataset
-**🔗 Source:** [Top 12 German Companies Financial Data (Kaggle)](https://www.kaggle.com/datasets)  
+**🔗 Source:** [Top 12 German Companies Financial Data (Kaggle)](https://www.kaggle.com/datasets/heidarmirhajisadati/top-12-german-companies-financial-data)  
 **📅 Description:** A financial dataset focused on German enterprises, with historical turnover values for SAP SE used to train and validate the forecasting model.
 
 ---

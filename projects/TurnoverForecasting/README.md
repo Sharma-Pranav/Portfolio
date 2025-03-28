@@ -49,7 +49,7 @@ This project delivers **AI-driven revenue forecasting** for **SAP SE** using a *
 
 ## 📊 Dataset
 
-- Source: **Top 12 German Companies Financial Data (Kaggle)**  
+- Source: [Top 12 German Companies Financial Data (Kaggle)](https://www.kaggle.com/datasets/heidarmirhajisadati/top-12-german-companies-financial-data)  
 - Focused subset: **SAP SE revenue over time**  
 - Realistic industry dataset for enterprise-level modeling
 
